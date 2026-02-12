@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suscripciones | Gestor Minimalista</title>
+
+    <!-- Tipografía Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <script>
+        const savedTheme = localStorage.getItem('gestor_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+
+    <style>
+        /* === VARIABLES & RESET === */
+        :root {
+            --bg-color: #f5f5f5;
+            --surface-color: #ffffff;
+            --border-color: #cccccc;
+            --border-focus: #000000;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --btn-hover: #333333;
+            --error-color: #d32f2f;
+            --card-bg: #fafafa;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --border-color: #333333;
+            --border-focus: #ffffff;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --btn-bg: #ffffff;
+            --btn-text: #000000;
+            --btn-hover: #e0e0e0;
+            --card-bg: #4d4d4d;
+
+            --border-color: #333333;
+            --text-muted: #a0a0a0;
+            --text-main: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            /* REGLA OBLIGATORIA: CERO BORDES CURVOS */
+            border-radius: 0 !important;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        input,
+        textarea,
+        select {
+            background-color: var(--surface-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            text-transform: uppercase;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 1;
+            text-transform: none;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        /* === TOPBAR DE USUARIO === */
+        .topbar {
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .user-email-tag {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            background: var(--surface-color);
+        }
+
+        .user-email-tag:hover {
+            border-color: var(--border-focus);
+            background: var(--bg-color);
+        }
+
+        .logout-btn {
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 0.8rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logout-btn:hover {
+            background: #b71c1c;
+        }
+
+        /* === DROPDOWN DE USUARIO === */
+        .user-dropdown {
+            position: absolute;
+            top: 110%;
+            right: 2.8rem;
+            background: var(--surface-color);
+            border: 1px solid var(--border-focus);
+            box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.1);
+            display: none;
+            flex-direction: column;
+            min-width: 180px;
+            z-index: 9999999;
+        }
+
+        .user-dropdown.show {
+            display: flex;
+        }
+
+        .user-dropdown a {
+            padding: 0.8rem 1rem;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .user-dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        .user-dropdown a:hover {
+            background: var(--bg-color);
+        }
+
+        /* === LAYOUT === */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            border-bottom: 2px solid var(--text-main);
+            padding-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        /* === EXCHANGE RATE TAGS === */
+        #exchange-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .exchange-rate {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--surface-color);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .exchange-rate:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        .exchange-rate-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-right: 0.2rem;
+        }
+
+        .btn-edit-rate {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            width: 34px;
+            height: 34px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--surface-color);
+        }
+
+        .btn-edit-rate:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        .exchange-rate-edit {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--surface-color);
+            padding: 0.25rem 0.5rem;
+            border: 1px solid var(--text-main);
+            flex-wrap: wrap;
+        }
+
+        .exchange-rate-edit input {
+            width: 80px;
+            padding: 0.3rem 0.5rem;
+            border: 1px solid var(--border-color);
+            outline: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: var(--bg-color);
+        }
+
+        .exchange-rate-edit input:focus {
+            border-color: var(--text-main);
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .btn-icon.confirm {
+            color: var(--surface-color);
+            background: var(--text-main);
+        }
+
+        .btn-icon.confirm:hover {
+            background: var(--btn-hover);
+        }
+
+        .btn-icon.cancel {
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-icon.cancel:hover {
+            background: #f5f5f5;
+            color: var(--text-main);
+            border-color: var(--text-main);
+        }
+
+        /* === DASHBOARD CARDS === */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--surface-color);
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--text-main);
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            word-break: break-all;
+        }
+
+        /* === MAIN CONTENT === */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* === FORM === */
+        .form-panel {
+            background: var(--surface-color);
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .form-panel h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--border-focus);
+            background: var(--surface-color);
+        }
+
+        .row-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--text-main);
+            color: var(--surface-color);
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--btn-hover);
+        }
+
+        /* === LIST === */
+        .list-panel {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .list-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid var(--text-main);
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .list-body {
+            max-height: 558px;
+            overflow-y: auto;
+
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+
+        .list-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .list-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .list-body::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .list-body:hover::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .list-body::-webkit-scrollbar-thumb:hover {
+            background-color: var(--text-main);
+            opacity: 1;
+        }
+
+        .list-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            transition: background 0.2s;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        .list-item:hover {
+            background: var(--card-bg);
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .item-category {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 0.2rem;
+        }
+
+        .item-price {
+            font-weight: 600;
+        }
+
+        .item-converted {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: var(--text-main);
+            color: var(--surface-color);
+        }
+
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
+        }
+
+        /* === UTILIDADES === */
+        .hidden {
+            display: none !important;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            background: var(--text-main);
+            color: var(--surface-color);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input {
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .installment-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .btn-pay {
+            background: transparent;
+            border: 1px solid var(--text-main);
+            color: var(--text-main);
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .btn-pay:hover {
+            background: var(--text-main);
+            color: var(--surface-color);
+        }
+
+        .item-completed {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV BAR SUPERIOR (NUEVO) -->
+    <div class="topbar gsap-fade">
+        <div class="user-actions">
+            <!-- Etiqueta de Correo -->
+            <div class="user-email-tag" id="user-email-tag" title="Haz clic para abrir el menú de usuario"
+                onclick="toggleDropdown()">
+                <i class="fa-solid fa-user"></i>
+                <span id="user-email-text">Cargando sesión...</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+
+            <!-- Menú Desplegable -->
+            <div class="user-dropdown" id="user-dropdown">
+                <a onclick="window.location.href = '/config/'" title="Ir a la configuración de tu cuenta"><i
+                        class="fa-solid fa-gear"></i>
+                    Configuración</a>
+            </div>
+
+            <!-- Botón de Apagado (Cerrar Sesión) -->
+            <button class="logout-btn" title="Cerrar sesión de forma segura" onclick="logout()">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="gsap-fade">
+            <h1 title="Título principal del panel">Cuentas & Suscripciones</h1>
+
+            <div id="exchange-container" title="Sección de cotización de monedas">
+                <!-- Modo visualización (2 Tags) -->
+                <div id="exchange-view-mode" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <div class="exchange-rate" onclick="toggleExchangeMode(true)"
+                        title="Haz clic para editar la cotización de Compra">
+                        <span class="exchange-rate-label">Compra</span> $ <span id="exchange-value-compra">1,150</span>
+                    </div>
+                    <div class="exchange-rate" onclick="toggleExchangeMode(true)"
+                        title="Haz clic para editar la cotización de Venta">
+                        <span class="exchange-rate-label">Venta</span> $ <span id="exchange-value-venta">1,200</span>
+                    </div>
+                    <button class="btn-edit-rate" onclick="toggleExchangeMode(true)"
+                        title="Editar cotizaciones de moneda">
+                        <i class="fa-solid fa-pen" style="font-size: 0.8rem;"></i>
+                    </button>
+                </div>
+
+                <!-- Modo edición -->
+                <div class="exchange-rate-edit hidden" id="exchange-edit">
+                    <span style="font-size: 0.8rem; font-weight:600;" title="Valor de compra">COMPRA:</span>
+                    <input type="number" id="exchange-input-compra" step="0.01" min="1"
+                        title="Ingresa el nuevo valor de compra del dólar">
+
+                    <span style="font-size: 0.8rem; font-weight:600; margin-left: 0.5rem;"
+                        title="Valor de venta">VENTA:</span>
+                    <input type="number" id="exchange-input-venta" step="0.01" min="1"
+                        title="Ingresa el nuevo valor de venta del dólar">
+
+                    <span style="font-size: 0.8rem; font-weight:600; margin-right: 0.5rem;">ARS</span>
+
+                    <button class="btn-icon confirm" onclick="saveExchangeRate()"
+                        title="Guardar las nuevas cotizaciones">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button class="btn-icon cancel" onclick="toggleExchangeMode(false)" title="Cancelar la edición">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="dashboard">
+            <div class="card gsap-fade" style="animation-delay: 0.1s;"
+                title="Suma total de gastos convertidos a Pesos Argentinos">
+                <div class="card-title">Gasto Total (Equivalente ARS)</div>
+                <div class="card-value">ARS <span id="total-ars">0</span></div>
+            </div>
+            <div class="card gsap-fade" style="animation-delay: 0.2s;"
+                title="Suma total de gastos convertidos a Dólares Estadounidenses">
+                <div class="card-title">Gasto Total (Equivalente USD)</div>
+                <div class="card-value">USD <span id="total-usd">0</span></div>
+            </div>
+            <div class="card gsap-fade" style="animation-delay: 0.3s;"
+                title="Cantidad de suscripciones y cuotas que aún debes pagar">
+                <div class="card-title">Suscripciones Activas</div>
+                <div class="card-value" id="total-items">0</div>
+            </div>
+        </section>
+
+        <section class="main-grid">
+            <!-- Formulario -->
+            <aside class="form-panel gsap-fade" style="animation-delay: 0.4s;">
+                <h2 title="Formulario para registrar un nuevo gasto">Nueva Suscripción</h2>
+                <form id="add-form">
+                    <div class="form-group">
+                        <label for="name" title="Nombre identificador de la cuenta o servicio">Nombre del
+                            Servicio</label>
+                        <input type="text" id="name" class="form-control" placeholder="Ej. Netflix, Gimnasio..."
+                            required title="Escribe el nombre del servicio (Ej: Spotify)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category" title="Clasificación para agrupar tus gastos">Categoría</label>
+                        <select id="category" class="form-control" required
+                            title="Despliega y elige una categoría para este gasto">
+                            <option value="Streaming">Streaming & Media</option>
+                            <option value="Software">Software & Herramientas</option>
+                            <option value="Servicios">Servicios Básicos</option>
+                            <option value="Educacion">Educación</option>
+                            <option value="Salud">Salud & Bienestar</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group hidden" id="custom-category-group">
+                        <label for="custom-category" title="Define una categoría personalizada">Especificar
+                            Categoría</label>
+                        <input type="text" id="custom-category" class="form-control"
+                            placeholder="Ej. Comida, Transporte..." title="Escribe tu propia categoría">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payment-method" title="Medio utilizado para pagar este servicio">Método de Pago /
+                            Tarjeta</label>
+                        <input type="text" id="payment-method" class="form-control"
+                            placeholder="Ej. Visa Santander, Efectivo..." required
+                            title="Indica con qué tarjeta o medio pagas esto">
+                    </div>
+
+                    <div class="form-group row-group">
+                        <div>
+                            <label for="amount" title="Valor numérico que pagas cada mes">Monto Mensual / Cuota</label>
+                            <input type="text" id="amount" class="form-control" placeholder="0.00" required
+                                title="Ingresa el costo numérico">
+                        </div>
+                        <div>
+                            <label for="currency" title="Moneda original en la que te cobran">Moneda</label>
+                            <select id="currency" class="form-control"
+                                title="Selecciona si te cobran en Pesos o en Dólares">
+                                <option value="ARS">ARS</option>
+                                <option value="USD">USD</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label class="checkbox-group"
+                        title="Marca esta casilla si no es una suscripción infinita, sino una compra en cuotas">
+                        <input type="checkbox" id="is-installment" title="Activar modo de pago en cuotas">
+                        Es un pago en cuotas
+                    </label>
+
+                    <div class="form-group row-group hidden" id="installments-group">
+                        <div>
+                            <label for="total-installments" title="Cantidad total de cuotas del plan">Total
+                                Cuotas</label>
+                            <input type="number" id="total-installments" class="form-control" min="2" value="12"
+                                title="Ej: 12 (para un plan de 12 cuotas)">
+                        </div>
+                        <div>
+                            <label for="paid-installments" title="Cuántas cuotas ya has pagado hasta hoy">Cuotas
+                                Pagadas</label>
+                            <input type="number" id="paid-installments" class="form-control" min="0" value="0"
+                                title="Ej: 2 (si ya pagaste 2 de las 12)">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn"
+                        title="Haz clic para registrar este nuevo gasto en tu base de datos">
+                        <i class="fa-solid fa-plus"></i> Agregar Gasto
+                    </button>
+                </form>
+            </aside>
+
+            <!-- Lista -->
+            <main class="list-panel gsap-fade" style="animation-delay: 0.5s;"
+                title="Historial detallado de todas tus suscripciones y cuotas">
+                <div class="list-header">
+                    <div title="Nombre, tarjeta y categoría">Detalle</div>
+                    <div title="Monto en la moneda original de cobro">Valor Original</div>
+                    <div title="Monto convertido a la otra moneda según cotización">Valor Convertido</div>
+                    <div title="Opciones disponibles para el registro">Acción</div>
+                </div>
+                <div class="list-body" id="list-body">
+                    <div class="empty-state"
+                        title="Aún no hay cotizaciones ni suscripciones registradas en tu historial">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <h3>No hay cotizaciones/suscripciones aún</h3>
+                        <p>Agrega tu primer registro utilizando el panel lateral.</p>
+                    </div>
+                </div>
+            </main>
+        </section>
+    </div>
+
+    <!-- Integración Firebase Realtime Database y Auth -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
+        // Configuración oficial de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-03EXQWiqdFsRG0zWaF0Y-5goSyjZsXg",
+            authDomain: "gastos-generales.firebaseapp.com",
+            projectId: "gastos-generales",
+            storageBucket: "gastos-generales.firebasestorage.app",
+            messagingSenderId: "154259308690",
+            appId: "1:154259308690:web:9924d809ba3d9f0b27664b",
+            databaseURL: "https://gastos-generales-default-rtdb.firebaseio.com"
+        };
+
+        // Iniciar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        // === PROTECCIÓN Y SESIÓN ===
+        // === PROTECCIÓN DE RUTA Y SESIÓN ===
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = '/auth/';
+            } else {
+                // Rellenar etiqueta de correo en la barra superior
+                document.getElementById('user-email-text').innerText = user.email;
+
+                // ✅ AHORA SÍ INICIALIZAR CON EL UID DEL USUARIO
+                initializeUserData(user);
+            }
+        });
+
+        // === LÓGICA DEL DROPDOWN Y LOGOUT ===
+        window.toggleDropdown = function () {
+            document.getElementById('user-dropdown').classList.toggle('show');
+        };
+
+        // Cerrar dropdown si se hace clic afuera
+        window.addEventListener('click', function (e) {
+            const tag = document.getElementById('user-email-tag');
+            const dropdown = document.getElementById('user-dropdown');
+            if (tag && dropdown && !tag.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        window.logout = function () {
+            signOut(auth).then(() => {
+                window.location.href = '/auth';
+            });
+        };
+
+        // === FUNCIÓN DE INICIALIZACIÓN (SE EJECUTA CUANDO EL USUARIO ESTÁ LISTO) ===
+        function initializeUserData(user) {
+            // === CONFIGURACIÓN BASE ===
+            let EXCHANGE_RATE_COMPRA = 1150;
+            let EXCHANGE_RATE_VENTA = 1200;
+            let subscriptions = [];
+            let animatedTotals = { ars: 0, usd: 0 };
+
+            // ✅ Referencias de Base de Datos CON UID DEL USUARIO
+            const exchangeRef = ref(db, `usuarios/${user.uid}/exchangeRate`);
+            const subscriptionsRef = ref(db, `usuarios/${user.uid}/subscriptions`);
+
+            // === INICIALIZACIÓN Y LISTENERS EN TIEMPO REAL ===
+            onValue(exchangeRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    EXCHANGE_RATE_COMPRA = data.compra || 1150;
+                    EXCHANGE_RATE_VENTA = data.venta || 1200;
+                }
+                document.getElementById('exchange-value-compra').innerText = formatMoney(EXCHANGE_RATE_COMPRA);
+                document.getElementById('exchange-value-venta').innerText = formatMoney(EXCHANGE_RATE_VENTA);
+
+                if (subscriptions.length > 0) {
+                    renderList();
+                    updateDashboard();
+                }
+            });
+
+            onValue(subscriptionsRef, (snapshot) => {
+                const data = snapshot.val();
+                let incomingData = [];
+
+                if (data) {
+                    incomingData = Array.isArray(data) ? data : Object.values(data);
+                }
+
+                if (JSON.stringify(incomingData) !== JSON.stringify(subscriptions)) {
+                    subscriptions = incomingData;
+                    renderList();
+                    updateDashboard();
+                }
+            });
+
+            animateOnLoad();
+
+            // Event Listeners UI
+            document.getElementById('add-form').addEventListener('submit', handleAddSubscription);
+
+            document.getElementById('category').addEventListener('change', function () {
+                const customGroup = document.getElementById('custom-category-group');
+                const customInput = document.getElementById('custom-category');
+                if (this.value === 'Otros') {
+                    customGroup.classList.remove('hidden');
+                    customInput.setAttribute('required', 'true');
+                } else {
+                    customGroup.classList.add('hidden');
+                    customInput.removeAttribute('required');
+                    customInput.value = '';
+                }
+            });
+
+            document.getElementById('is-installment').addEventListener('change', function () {
+                const group = document.getElementById('installments-group');
+                if (this.checked) {
+                    group.classList.remove('hidden');
+                } else {
+                    group.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('amount').addEventListener('input', function (e) {
+                let val = this.value.replace(/[^0-9.]/g, '');
+                let parts = val.split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                if (parts.length > 2) parts.pop();
+                this.value = parts.join('.');
+            });
+
+            // === EXPOSICIÓN DE FUNCIONES A WINDOW ===
+            window.toggleExchangeMode = function (show) {
+                const display = document.getElementById('exchange-view-mode');
+                const edit = document.getElementById('exchange-edit');
+
+                if (show) {
+                    display.classList.add('hidden');
+                    edit.classList.remove('hidden');
+                    document.getElementById('exchange-input-compra').value = EXCHANGE_RATE_COMPRA;
+                    document.getElementById('exchange-input-venta').value = EXCHANGE_RATE_VENTA;
+                    document.getElementById('exchange-input-compra').focus();
+                } else {
+                    display.classList.remove('hidden');
+                    edit.classList.add('hidden');
+                }
+            };
+
+            window.saveExchangeRate = function () {
+                const valCompra = parseFloat(document.getElementById('exchange-input-compra').value);
+                const valVenta = parseFloat(document.getElementById('exchange-input-venta').value);
+
+                if (!isNaN(valCompra) && valCompra > 0 && !isNaN(valVenta) && valVenta > 0) {
+                    set(exchangeRef, {
+                        compra: valCompra,
+                        venta: valVenta
+                    }).then(() => {
+                        toggleExchangeMode(false);
+                    }).catch(error => {
+                        console.error("Error guardando tasas:", error);
+                    });
+                }
+            };
+
+            window.payInstallment = function (id) {
+                const item = subscriptions.find(i => i.id === id);
+                if (item && item.isInstallment && item.paidInstallments < item.totalInstallments) {
+                    item.paidInstallments++;
+                    renderList();
+                    updateDashboard();
+                    saveDataToFirebase();
+                }
+            };
+
+            window.deleteSubscription = function (id) {
+                subscriptions = subscriptions.filter(item => item.id !== id);
+                renderList();
+                updateDashboard();
+                saveDataToFirebase();
+            };
+
+            // === FUNCIONES PRINCIPALES ===
+
+            function handleAddSubscription(e) {
+                e.preventDefault();
+
+                const name = document.getElementById('name').value;
+                const categorySelect = document.getElementById('category').value;
+                const customCategory = document.getElementById('custom-category').value;
+                const category = categorySelect === 'Otros' ? customCategory : categorySelect;
+                const paymentMethod = document.getElementById('payment-method').value;
+
+                const amountRaw = document.getElementById('amount').value.replace(/,/g, '');
+                const amount = parseFloat(amountRaw);
+                const currency = document.getElementById('currency').value;
+
+                const isInstallment = document.getElementById('is-installment').checked;
+                const totalInstallments = parseInt(document.getElementById('total-installments').value) || 0;
+                const paidInstallments = parseInt(document.getElementById('paid-installments').value) || 0;
+
+                const newItem = {
+                    id: Date.now().toString(),
+                    name,
+                    category,
+                    paymentMethod,
+                    amount,
+                    currency,
+                    isInstallment,
+                    totalInstallments,
+                    paidInstallments
+                };
+
+                subscriptions.push(newItem);
+
+                renderList();
+                updateDashboard();
+                saveDataToFirebase();
+
+                document.getElementById('add-form').reset();
+                document.getElementById('custom-category-group').classList.add('hidden');
+                document.getElementById('installments-group').classList.add('hidden');
+                document.getElementById('custom-category').removeAttribute('required');
+                document.getElementById('name').focus();
+            }
+
+            function saveDataToFirebase() {
+                set(subscriptionsRef, subscriptions).catch(error => {
+                    console.error("Error guardando datos:", error);
+                });
+            }
+
+            // === RENDERIZADO UI ===
+
+            function renderList() {
+                const listBody = document.getElementById('list-body');
+                listBody.innerHTML = '';
+
+                // EL FAMOSO CARTEL DE "AÚN NO HAY DATOS" ESTÁ AQUÍ
+                if (subscriptions.length === 0) {
+                    listBody.innerHTML = `
+                <div class="empty-state" title="Aún no hay cotizaciones ni suscripciones registradas en tu historial">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <h3>No hay cotizaciones/suscripciones aún</h3>
+                    <p>Agrega tu primer registro utilizando el panel lateral.</p>
+                </div>
+            `;
+                    return;
+                }
+
+                subscriptions.forEach((item, index) => {
+                    let originalText = '';
+                    let convertedText = '';
+
+                    if (item.currency === 'USD') {
+                        originalText = `USD ${formatMoney(item.amount)}`;
+                        convertedText = `ARS ${formatMoney(item.amount * EXCHANGE_RATE_VENTA)} <span style="font-size:0.65rem">(Venta)</span>`;
+                    } else {
+                        originalText = `ARS ${formatMoney(item.amount)}`;
+                        convertedText = `USD ${formatMoney(item.amount / EXCHANGE_RATE_COMPRA)} <span style="font-size:0.65rem">(Compra)</span>`;
+                    }
+
+                    const isCompleted = item.isInstallment && item.paidInstallments >= item.totalInstallments;
+                    const rowClass = isCompleted ? 'list-item item-completed' : 'list-item';
+
+                    let installmentHtml = '';
+                    if (item.isInstallment) {
+                        installmentHtml = `
+                    <div class="installment-info" title="Progreso del pago de cuotas">
+                        Cuota: ${item.paidInstallments} / ${item.totalInstallments}
+                        ${!isCompleted ? `<button class="btn-pay" onclick="payInstallment('${item.id}')" title="Marcar una cuota adicional como pagada">+ Pagar 1</button>` : '<span title="Este gasto ya está completamente pagado">(Saldado)</span>'}
+                    </div>
+                `;
+                    }
+
+                    const row = document.createElement('div');
+                    row.className = rowClass;
+                    row.title = "Registro guardado: " + item.name;
+                    row.innerHTML = `
+                <div>
+                    <div class="item-name" title="Nombre de la suscripción/gasto">${item.name} <span class="badge" title="Medio de pago asociado">${item.paymentMethod || 'N/A'}</span></div>
+                    <div class="item-category" title="Categoría del gasto"><i class="fa-solid fa-tag" style="margin-right: 5px;"></i>${item.category}</div>
+                    ${installmentHtml}
+                </div>
+                <div class="item-price" title="Costo en la moneda original de cobro">${originalText}</div>
+                <div class="item-converted" title="Costo al convertir la moneda según la cotización del día">${convertedText}</div>
+                <div>
+                    <button class="btn-delete" onclick="deleteSubscription('${item.id}')" title="Eliminar definitivamente este registro">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `;
+
+                    listBody.appendChild(row);
+
+                    gsap.fromTo(row,
+                        { opacity: 0, x: -20 },
+                        { opacity: 1, x: 0, duration: 0.3, delay: index * 0.05 }
+                    );
+                });
+            }
+
+            function updateDashboard() {
+                let totalARS = 0;
+                let totalUSD = 0;
+                let activeItems = 0;
+
+                subscriptions.forEach(item => {
+                    const isCompleted = item.isInstallment && item.paidInstallments >= item.totalInstallments;
+
+                    if (!isCompleted) {
+                        activeItems++;
+                        if (item.currency === 'USD') {
+                            totalARS += (item.amount * EXCHANGE_RATE_VENTA);
+                            totalUSD += item.amount;
+                        } else {
+                            totalARS += item.amount;
+                            totalUSD += (item.amount / EXCHANGE_RATE_COMPRA);
+                        }
+                    }
+                });
+
+                gsap.to(animatedTotals, {
+                    ars: totalARS,
+                    usd: totalUSD,
+                    duration: 1,
+                    ease: "power2.out",
+                    onUpdate: () => {
+                        document.getElementById('total-ars').innerText = formatMoney(animatedTotals.ars);
+                        document.getElementById('total-usd').innerText = formatMoney(animatedTotals.usd);
+                    }
+                });
+
+                document.getElementById('total-items').innerText = activeItems;
+            }
+
+            // === UTILIDADES ===
+
+            function formatMoney(amount) {
+                return amount.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            function animateOnLoad() {
+                gsap.fromTo(".gsap-fade",
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" }
+                );
+            }
+        }
+
+    </script>
+</body>
+
+</html>

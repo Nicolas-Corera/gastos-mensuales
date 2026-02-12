@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración | Gestor Minimalista</title>
+
+    <!-- Tipografía Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Script de Tema Temprano (Evita parpadeos) -->
+    <script>
+        const savedTheme = localStorage.getItem('gestor_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+
+    <style>
+        /* === VARIABLES & RESET === */
+        :root {
+            --bg-color: #f5f5f5;
+            --surface-color: #ffffff;
+            --border-color: #cccccc;
+            --border-focus: #000000;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --btn-bg: #000000;
+            --btn-text: #ffffff;
+            --btn-hover: #333333;
+            --error-color: #d32f2f;
+            --success-color: #2e7d32;
+        }
+
+        /* Variables Modo Oscuro */
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --border-color: #333333;
+            --border-focus: #ffffff;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --btn-bg: #ffffff;
+            --btn-text: #000000;
+            --btn-hover: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            /* REGLA OBLIGATORIA: CERO BORDES CURVOS */
+            border-radius: 0 !important;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* === TOPBAR DE USUARIO === */
+        .topbar {
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-muted);
+        }
+
+        /* === LAYOUT === */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--text-main);
+            padding-bottom: 1rem;
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        /* === CONFIG GRID === */
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--surface-color);
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .card.full-width {
+            margin-bottom: 2rem;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--text-main);
+        }
+
+        .card.danger::before {
+            background-color: var(--error-color);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-desc-bottom{
+            font-style: italic;
+            color: var(--text-muted);
+            margin-top: 1.5rem;
+        }
+
+        /* === FORM & CONTROLS === */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--border-focus);
+            background: var(--surface-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 1px solid var(--border-focus);
+            font-size: 0.9rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--btn-hover);
+        }
+
+        .btn-danger {
+            background: var(--error-color);
+            color: white;
+            border-color: var(--error-color);
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        /* === THEME TOGGLE === */
+        .theme-options {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .theme-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-main);
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-btn.active {
+            border-color: var(--text-main);
+            background: var(--surface-color);
+            box-shadow: inset 0 0 0 2px var(--text-main);
+        }
+
+        .theme-btn:hover {
+            border-color: var(--text-main);
+        }
+
+        .theme-btn i {
+            font-size: 1.5rem;
+        }
+
+        /* === MENSAJES FEEDBACK === */
+        .feedback-msg {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 0.5rem;
+            display: none;
+        }
+
+        .feedback-msg.error {
+            display: block;
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+            background: rgba(211, 47, 47, 0.05);
+        }
+
+        .feedback-msg.success {
+            display: block;
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+            background: rgba(46, 125, 50, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV BAR SUPERIOR (Minimalista) -->
+    <div class="topbar gsap-fade">
+        <a href="/" class="back-btn" title="Haz clic para regresar al panel principal de cotizaciones">
+            <i class="fa-solid fa-arrow-left"></i> Volver al Inicio
+        </a>
+    </div>
+
+    <div class="container">
+        <header class="gsap-fade">
+            <h1 title="Título de la sección de ajustes">Configuración</h1>
+        </header>
+
+        <!-- TARJETA: CAMBIAR CORREO (Sección Superior) -->
+        <div class="card full-width gsap-fade" style="animation-delay: 0.05s;"
+            title="Panel para gestionar tu correo electrónico">
+            <div class="card-header" title="Sección de correo de la cuenta">
+                <i class="fa-solid fa-envelope"></i> Correo Electrónico
+            </div>
+            <p class="card-desc" title="Información de tu cuenta">Actualiza la dirección de correo electrónico vinculada
+                a tu cuenta. <br>Correo actual: <strong id="current-email-display"
+                    style="color: var(--text-main);">Cargando...</strong></p>
+
+            <form id="email-form">
+                <div class="form-group">
+                    <label for="new-email" title="Etiqueta para el nuevo correo">Nuevo Correo Electrónico</label>
+                    <input type="email" id="new-email" class="form-control" placeholder="nuevo@correo.com" required
+                        title="Ingresa aquí tu nueva dirección de correo">
+                </div>
+                <button type="submit" class="btn" title="Confirmar actualización de correo" id="btn-change-email">
+                    <i class="fa-solid fa-envelope-circle-check"></i> Actualizar Correo
+                </button>
+            </form>
+            <div id="email-feedback" class="feedback-msg"></div>
+        </div>
+
+        <section class="config-grid">
+
+            <!-- TARJETA: APARIENCIA -->
+            <div class="card gsap-fade" style="animation-delay: 0.1s;"
+                title="Panel para cambiar los colores de la aplicación">
+                <div class="card-header" title="Sección de apariencia visual">
+                    <i class="fa-solid fa-palette"></i> Apariencia
+                </div>
+                <p class="card-desc" title="Descripción sobre la interfaz">Personaliza los colores de la interfaz. Se
+                    guardará en el navegador y en la base de datos.</p>
+
+                <div class="theme-options">
+                    <button class="theme-btn" id="btn-light" onclick="setTheme('light')"
+                        title="Haz clic para activar los colores claros">
+                        <i class="fa-solid fa-sun"></i>
+                        Modo Claro
+                    </button>
+                    <button class="theme-btn" id="btn-dark" onclick="setTheme('dark')"
+                        title="Haz clic para activar los colores oscuros">
+                        <i class="fa-solid fa-moon"></i>
+                        Modo Oscuro
+                    </button>
+                </div>
+            </div>
+
+            <!-- TARJETA: SEGURIDAD (Cambiar Clave) -->
+            <div class="card gsap-fade" style="animation-delay: 0.2s;"
+                title="Panel para gestionar la seguridad de tu acceso">
+                <div class="card-header" title="Sección de seguridad de la cuenta">
+                    <i class="fa-solid fa-shield-halved"></i> Seguridad
+                </div>
+                <p class="card-desc" title="Descripción sobre la contraseña">Cambia la contraseña de acceso de tu
+                    cuenta. Debe tener al menos 6 caracteres.</p>
+
+                <form id="password-form">
+                    <div class="form-group">
+                        <label for="new-password" title="Etiqueta para escribir tu nueva clave">Nueva Contraseña</label>
+                        <input type="password" id="new-password" class="form-control" placeholder="••••••••" required
+                            minlength="6" title="Ingresa aquí la nueva clave que deseas usar">
+                    </div>
+                    <button type="submit" class="btn" title="Haz clic para confirmar el cambio de tu contraseña"
+                        id="btn-change-pwd">
+                        <i class="fa-solid fa-key"></i> Actualizar Contraseña
+                    </button>
+                </form>
+                <div id="pwd-feedback" class="feedback-msg"
+                    title="Área donde aparecen los mensajes del sistema sobre tu contraseña"></div>
+            </div>
+
+            <!-- TARJETA: CERRAR SESIÓN -->
+            <div class="card gsap-fade" style="animation-delay: 0.3s;"
+                title="Panel para cerrar sesión en este dispositivo">
+                <div class="card-header" title="Sección de cierre de sesión">
+                    <i class="fa-solid fa-power-off"></i> Cerrar Sesión
+                </div>
+                <p class="card-desc" title="Descripción de la acción de salir">Cierra tu sesión de forma segura. Tendrás
+                    que volver a ingresar tu correo y contraseña para acceder.</p>
+
+                <button class="btn" onclick="logout()" title="Haz clic para salir de tu cuenta"
+                    style="background: transparent; color: var(--text-main); border: 2px solid var(--text-main);">
+                    <i class="fa-solid fa-right-from-bracket"></i> Salir de la Cuenta
+                </button>
+            </div>
+
+            <!-- TARJETA: ZONA PELIGROSA (Eliminar Cuenta) -->
+            <div class="card danger gsap-fade" style="animation-delay: 0.4s;"
+                title="Panel crítico de eliminación de cuenta">
+                <div class="card-header" style="color: var(--error-color);" title="Sección de eliminación total">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Zona Peligrosa
+                </div>
+                <p class="card-desc" title="Advertencia sobre el borrado de datos">Al eliminar tu cuenta, se borrará
+                    permanentemente de la base de datos.</p>
+
+                <button class="btn btn-danger" onclick="confirmDeleteAccount()"
+                    title="Haz clic para solicitar la eliminación permanente de tu usuario" id="btn-delete">
+                    <i class="fa-solid fa-trash-can"></i> Eliminar mi Cuenta
+                </button>
+
+                <small class="card-desc-bottom" title="Advertencia sobre el borrado de datos">Esta acción no se puede deshacer.</small>
+
+                <div id="delete-feedback" class="feedback-msg" title="Área donde aparecen las alertas de eliminación">
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <!-- Integración Firebase Auth y RTDB -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, updatePassword, updateEmail, deleteUser } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+        import { getDatabase, ref, update, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-03EXQWiqdFsRG0zWaF0Y-5goSyjZsXg",
+            authDomain: "gastos-generales.firebaseapp.com",
+            databaseURL: "https://gastos-generales-default-rtdb.firebaseio.com",
+            projectId: "gastos-generales",
+            storageBucket: "gastos-generales.firebasestorage.app",
+            messagingSenderId: "154259308690",
+            appId: "1:154259308690:web:9924d809ba3d9f0b27664b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        let currentUser = null;
+
+        // === PROTECCIÓN DE RUTA Y SESIÓN ===
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = '/auth/';
+            } else {
+                currentUser = user;
+                const emailDisplay = document.getElementById('current-email-display');
+                if (emailDisplay) emailDisplay.innerText = user.email;
+            }
+        });
+
+        // === FUNCIÓN AUXILIAR: ACTUALIZAR RTDB ===
+        async function syncToRTDB(dataToUpdate) {
+            if (!currentUser) return;
+            try {
+                // Actualiza los nodos en RTDB. Si no existen, los crea automáticamente.
+                await update(ref(db, 'usuarios/' + currentUser.uid), dataToUpdate);
+            } catch (error) {
+                console.error("Error al sincronizar con la base de datos:", error);
+            }
+        }
+
+        // === LOGOUT ===
+        window.logout = function () {
+            signOut(auth).then(() => {
+                window.location.href = '/auth/';
+            });
+        };
+
+        // === LÓGICA DE TEMAS (DARK/LIGHT MODE) ===
+        window.setTheme = function (theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('gestor_theme', theme);
+            updateThemeButtons(theme);
+
+            // Sincronizar en la base de datos
+            syncToRTDB({ theme: theme });
+        };
+
+        function updateThemeButtons(theme) {
+            document.getElementById('btn-light').classList.remove('active');
+            document.getElementById('btn-dark').classList.remove('active');
+            if (theme === 'dark') {
+                document.getElementById('btn-dark').classList.add('active');
+            } else {
+                document.getElementById('btn-light').classList.add('active');
+            }
+        }
+
+        // Inicializar botones de tema según preferencia guardada
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        updateThemeButtons(currentTheme);
+
+        // === LÓGICA CAMBIAR CORREO ===
+        document.getElementById('email-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newEmail = document.getElementById('new-email').value;
+            const feedback = document.getElementById('email-feedback');
+            const btn = document.getElementById('btn-change-email');
+
+            if (!currentUser) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
+
+            updateEmail(currentUser, newEmail).then(() => {
+                // Actualizar en RTDB
+                syncToRTDB({ email: newEmail });
+
+                feedback.innerText = "¡Correo electrónico actualizado con éxito!";
+                feedback.className = "feedback-msg success";
+                document.getElementById('current-email-display').innerText = newEmail;
+                document.getElementById('email-form').reset();
+            }).catch((error) => {
+                feedback.className = "feedback-msg error";
+                if (error.code === 'auth/requires-recent-login') {
+                    feedback.innerText = "Por seguridad, debes cerrar sesión y volver a ingresar antes de cambiar tu correo.";
+                } else if (error.code === 'auth/email-already-in-use') {
+                    feedback.innerText = "Esta dirección de correo ya está registrada en otra cuenta.";
+                } else {
+                    feedback.innerText = "Ocurrió un error al intentar actualizar el correo.";
+                }
+            }).finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-envelope-circle-check"></i> Actualizar Correo';
+            });
+        });
+
+        // === LÓGICA CAMBIAR CONTRASEÑA ===
+        document.getElementById('password-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('new-password').value;
+            const feedback = document.getElementById('pwd-feedback');
+            const btn = document.getElementById('btn-change-pwd');
+
+            if (!currentUser) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
+
+            updatePassword(currentUser, newPassword).then(() => {
+                // Registrar fecha de actualización en la RTDB por seguridad/historial
+                syncToRTDB({ lastPasswordChange: new Date().toISOString() });
+
+                feedback.innerText = "¡Contraseña actualizada con éxito!";
+                feedback.className = "feedback-msg success";
+                document.getElementById('password-form').reset();
+            }).catch((error) => {
+                feedback.className = "feedback-msg error";
+                if (error.code === 'auth/requires-recent-login') {
+                    feedback.innerText = "Por seguridad, debes cerrar sesión y volver a ingresar para cambiar tu clave.";
+                } else {
+                    feedback.innerText = "Error: La contraseña es muy débil o hubo un problema.";
+                }
+            }).finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-key"></i> Actualizar Contraseña';
+            });
+        });
+
+        // === LÓGICA ELIMINAR CUENTA (Auth + RTDB) ===
+        window.confirmDeleteAccount = async function () {
+            const feedback = document.getElementById('delete-feedback');
+
+            if (confirm("¿Estás ABSOLUTAMENTE SEGURO de querer eliminar tu cuenta? Todos tus datos se borrarán de la base de datos y perderás el acceso.")) {
+
+                const btn = document.getElementById('btn-delete');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+
+                try {
+                    // 1. Primero borramos los datos del usuario en la RTDB
+                    await remove(ref(db, 'usuarios/' + currentUser.uid));
+
+                    // 2. Luego eliminamos el usuario de Auth
+                    await deleteUser(currentUser);
+
+                    // (Redirigirá automáticamente por el onAuthStateChanged al detectar sesión nula)
+                } catch (error) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Eliminar mi Cuenta';
+                    feedback.className = "feedback-msg error";
+
+                    if (error.code === 'auth/requires-recent-login') {
+                        feedback.innerText = "ACCESO DENEGADO: Por tu seguridad, debes cerrar sesión e ingresar nuevamente con tu correo y contraseña justo antes de eliminar la cuenta.";
+                    } else {
+                        feedback.innerText = "Ocurrió un error al intentar eliminar la cuenta.";
+                    }
+                }
+            }
+        };
+
+        // Animación de entrada general
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.fromTo(".gsap-fade",
+                { opacity: 0, y: 20 },
+                { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power2.out" }
+            );
+        });
+
+    </script>
+</body>
+
+</html>

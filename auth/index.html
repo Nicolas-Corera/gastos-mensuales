@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso | Gestor Minimalista</title>
+
+    <!-- Tipografía Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        /* === VARIABLES & RESET === */
+        :root {
+            --bg-color: #f5f5f5;
+            --surface-color: #ffffff;
+            --border-color: #cccccc;
+            --border-focus: #000000;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --btn-hover: #333333;
+            --error-color: #d32f2f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            /* REGLA OBLIGATORIA: CERO BORDES CURVOS */
+            border-radius: 0 !important;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* === AUTH CONTAINER === */
+        .auth-container {
+            background: var(--surface-color);
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.05);
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--text-main);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .auth-header i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .auth-header h1 {
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        /* === TABS === */
+        .tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 1rem;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--text-main);
+        }
+
+        /* === FORM === */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--border-focus);
+            background: var(--surface-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--text-main);
+            color: var(--surface-color);
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .btn:hover {
+            background: var(--btn-hover);
+        }
+
+        .btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        /* === PASSWORD TOGGLE === */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper .form-control {
+            padding-right: 2.5rem;
+            /* Evita que el texto pase por debajo del icono */
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-main);
+        }
+
+        /* === MESSAGES === */
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            text-align: center;
+            min-height: 1.2rem;
+        }
+
+        .success-message {
+            color: #2e7d32;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            text-align: center;
+            min-height: 1.2rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-container gsap-fade">
+        <div class="auth-header">
+            <i class="fa-solid fa-fingerprint"></i>
+            <h1>Acceso Seguro</h1>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-login" onclick="switchTab('login')"
+                title="Pestaña para iniciar sesión">Ingresar</button>
+            <button class="tab-btn" id="tab-register" onclick="switchTab('register')"
+                title="Pestaña para crear una cuenta nueva">Registrarse</button>
+        </div>
+
+        <form id="auth-form">
+            <div class="form-group">
+                <label for="email" title="Etiqueta del correo electrónico">Correo Electrónico</label>
+                <input type="email" id="email" class="form-control" placeholder="tu@correo.com" required
+                    title="Ingresa tu dirección de correo electrónico registrada">
+            </div>
+
+            <div class="form-group">
+                <label for="password" title="Etiqueta de la contraseña">Contraseña</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required
+                        title="Ingresa tu contraseña de seguridad">
+                    <i class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility()" id="toggle-icon"
+                        title="Mostrar/Ocultar la contraseña"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="submit-btn" title="Haz clic para procesar tu solicitud de acceso">
+                <span id="btn-text">Ingresar</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </form>
+
+        <div id="feedback-msg" class="error-message" title="Área de notificaciones del sistema"></div>
+    </div>
+
+    <!-- Integración Firebase Auth -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+        import { getDatabase, ref, set, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        // Tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-03EXQWiqdFsRG0zWaF0Y-5goSyjZsXg",
+            authDomain: "gastos-generales.firebaseapp.com",
+            databaseURL: "https://gastos-generales-default-rtdb.firebaseio.com",
+            projectId: "gastos-generales",
+            storageBucket: "gastos-generales.firebasestorage.app",
+            messagingSenderId: "154259308690",
+            appId: "1:154259308690:web:9924d809ba3d9f0b27664b"
+        };
+
+        // Iniciar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // Variables de estado
+        let isLoginMode = true;
+
+        // Elementos del DOM
+        const form = document.getElementById('auth-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const feedbackMsg = document.getElementById('feedback-msg');
+
+        // Función para cambiar de pestaña (expuesta a window para el onclick HTML)
+        window.switchTab = function (mode) {
+            isLoginMode = mode === 'login';
+
+            // Actualizar UI de pestañas
+            document.getElementById('tab-login').classList.toggle('active', isLoginMode);
+            document.getElementById('tab-register').classList.toggle('active', !isLoginMode);
+
+            // Actualizar textos
+            btnText.innerText = isLoginMode ? 'Ingresar' : 'Crear Cuenta';
+            feedbackMsg.innerText = '';
+            feedbackMsg.className = 'error-message';
+
+            // Animación suave del formulario
+            gsap.fromTo(form, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 });
+        };
+
+        // Función para ver/ocultar contraseña
+        window.togglePasswordVisibility = function () {
+            const toggleIcon = document.getElementById('toggle-icon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        };
+
+        // Manejar envío del formulario
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!email || !password) {
+                showFeedback("Por favor, completa todos los campos.", true);
+                return;
+            }
+
+            // Deshabilitar botón mientras carga
+            submitBtn.disabled = true;
+            btnText.innerText = 'Procesando...';
+
+            if (isLoginMode) {
+                // MODO LOGIN
+                signInWithEmailAndPassword(auth, email, password)
+                    .then(async (userCredential) => {
+                        const user = userCredential.user;
+
+                        // Actualizar fecha de último login en la RTDB
+                        try {
+                            await update(ref(db, 'usuarios/' + user.uid), {
+                                lastLogin: new Date().toISOString()
+                            });
+                        } catch (dbError) {
+                            console.error("Error al actualizar la base de datos:", dbError);
+                        }
+
+                        showFeedback("¡Acceso exitoso! Redirigiendo...", false);
+                        // Redirigir al panel principal después de 1 segundo
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1000);
+                    })
+                    .catch((error) => {
+                        handleAuthError(error);
+                        resetButton();
+                    });
+            } else {
+                // MODO REGISTRO
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(async (userCredential) => {
+                        const user = userCredential.user;
+
+                        // Guardar los datos iniciales del usuario en la RTDB
+                        try {
+                            await set(ref(db, 'usuarios/' + user.uid), {
+                                email: user.email,
+                                createdAt: new Date().toISOString(),
+                                lastLogin: new Date().toISOString()
+                            });
+                        } catch (dbError) {
+                            console.error("Error al guardar en la base de datos:", dbError);
+                        }
+
+                        showFeedback("¡Cuenta creada con éxito! Redirigiendo...", false);
+                        // Redirigir al panel principal
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1000);
+                    })
+                    .catch((error) => {
+                        handleAuthError(error);
+                        resetButton();
+                    });
+            }
+        });
+
+        // Funciones de utilidad
+        function showFeedback(message, isError) {
+            feedbackMsg.innerText = message;
+            feedbackMsg.className = isError ? 'error-message' : 'success-message';
+        }
+
+        function resetButton() {
+            submitBtn.disabled = false;
+            btnText.innerText = isLoginMode ? 'Ingresar' : 'Crear Cuenta';
+        }
+
+        function handleAuthError(error) {
+            const errorCode = error.code;
+            let errorMessage = "Ocurrió un error. Inténtalo de nuevo.";
+
+            switch (errorCode) {
+                case 'auth/invalid-email':
+                    errorMessage = "El correo electrónico no es válido.";
+                    break;
+                case 'auth/user-disabled':
+                    errorMessage = "Este usuario ha sido deshabilitado.";
+                    break;
+                case 'auth/user-not-found':
+                    errorMessage = "No existe una cuenta con este correo.";
+                    break;
+                case 'auth/wrong-password':
+                    errorMessage = "Contraseña incorrecta.";
+                    break;
+                case 'auth/email-already-in-use':
+                    errorMessage = "El correo ya está registrado en otra cuenta.";
+                    break;
+                case 'auth/weak-password':
+                    errorMessage = "La contraseña debe tener al menos 6 caracteres.";
+                    break;
+                case 'auth/invalid-credential':
+                    errorMessage = "Credenciales inválidas. Verifica tu correo y contraseña.";
+                    break;
+            }
+
+            showFeedback(errorMessage, true);
+            // Animación de error (shake)
+            gsap.fromTo(form, { x: -5 }, { x: 5, duration: 0.1, yoyo: true, repeat: 3, onComplete: () => gsap.set(form, { x: 0 }) });
+        }
+
+        // Animación inicial
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.fromTo(".gsap-fade",
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+            );
+        });
+
+    </script>
+</body>
+
+</html>
