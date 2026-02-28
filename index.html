@@ -32,6 +32,7 @@
             --btn-hover: #333333;
             --error-color: #d32f2f;
             --card-bg: #fafafa;
+            --border-light: #ebebeb;
         }
 
         [data-theme="dark"] {
@@ -49,6 +50,8 @@
             --border-color: #333333;
             --text-muted: #a0a0a0;
             --text-main: #ffffff;
+
+            --border-light: #1d1d1d;
         }
 
         * {
@@ -616,6 +619,54 @@
             opacity: 0.5;
         }
 
+        footer {
+            border-top: 3px solid var(--border-light);
+        }
+
+        .footerContent {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        .footerContent p:first-child {
+            opacity: 0.5;
+        }
+
+        .footerContent p:nth-child(2) {
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: right;
+            gap: 1rem;
+        }
+
+        .footerContent a {
+            color: var(--text-main);
+            text-decoration: none;
+            position: relative;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .footerContent a::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background-color: var(--text-main);
+            transition: width 0.3s ease;
+        }
+
+        .footerContent a:hover::after {
+            width: 100%;
+        }
+
+        .footerContent a:hover {
+            opacity: 1;
+        }
 
         /* ========================================= */
         /* === MEDIA QUERIES - RESPONSIVE DESIGN === */
@@ -654,13 +705,20 @@
             .list-body {
                 max-height: 400px;
             }
+
+            .footerContent {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
         }
 
         /* MOBILE LANDSCAPE - 768px */
         @media (max-width: 768px) {
             .topbar {
                 padding: 1rem;
-            } 
+            }
 
             .user-email-tag {
                 font-size: 0.75rem;
@@ -719,6 +777,12 @@
                 display: flex;
                 flex-direction: column;
                 gap: 0.25rem;
+            }
+
+            .list-item>div:nth-child(4) {
+                position: absolute;
+                top: 10px;
+                right: 10px;
             }
 
             .item-name {
@@ -912,6 +976,27 @@
 
             .empty-state i {
                 font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 587px) {
+            .footerContent {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .footerContent p:nth-child(2) {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .footerContent p:first-child {
+                text-align: center;
             }
         }
 
@@ -1131,6 +1216,20 @@
             </main>
         </section>
     </div>
+
+    <footer>
+        <div class="container">
+            <div class="footerContent">
+                <p>© 2026 GM. Todos los derechos reservados.</p>
+                <p>
+                    <a href="">Contacto</a>
+                    <a href="">Sugerencias</a>
+                    <a href="">Política de Privacidad</a>
+                    <a href="">Términos de Uso</a>
+                </p>
+            </div>
+        </div>
+    </footer>
 
     <!-- Integración Firebase Realtime Database y Auth -->
     <script type="module">
@@ -1421,7 +1520,7 @@
                 <div class="item-price" title="Costo en la moneda original de cobro">${originalText}</div>
                 <div class="item-converted" title="Costo al convertir la moneda según la cotización del día">${convertedText}</div>
                 <div>
-                    <button class="btn-delete" onclick="deleteSubscription('${item.id}')" title="Eliminar definitivamente este registro">
+                    <button class="btn-delete" id="deleteBtn" onclick="deleteSubscription('${item.id}')" title="Eliminar definitivamente este registro">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
