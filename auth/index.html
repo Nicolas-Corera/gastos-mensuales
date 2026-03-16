@@ -1,893 +1,969 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Acceso | Gestor Minimalista</title>
 
     <!-- Tipografía Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
 
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <style>
-        /* === VARIABLES & RESET === */
-        :root {
-            --bg-color: #f5f5f5;
-            --surface-color: #ffffff;
-            --border-color: #cccccc;
-            --border-focus: #000000;
-            --text-main: #000000;
-            --text-muted: #666666;
-            --btn-hover: #333333;
-            --error-color: #d32f2f;
-            --card-bg: #fafafa;
-            --border-light: #ebebeb;
+      /* === VARIABLES & RESET === */
+      :root {
+        --bg-color: #f5f5f5;
+        --surface-color: #ffffff;
+        --border-color: #cccccc;
+        --border-focus: #000000;
+        --text-main: #000000;
+        --text-muted: #666666;
+        --btn-hover: #333333;
+        --error-color: #d32f2f;
+        --card-bg: #fafafa;
+        --border-light: #ebebeb;
+      }
+
+      [data-theme="dark"] {
+        --bg-color: #121212;
+        --surface-color: #1e1e1e;
+        --border-color: #333333;
+        --border-focus: #ffffff;
+        --text-main: #ffffff;
+        --text-muted: #a0a0a0;
+        --btn-bg: #ffffff;
+        --btn-text: #000000;
+        --btn-hover: #e0e0e0;
+        --card-bg: #4d4d4d;
+
+        --border-color: #333333;
+        --text-muted: #a0a0a0;
+        --text-main: #ffffff;
+
+        --border-light: #1d1d1d;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+        /* REGLA OBLIGATORIA: CERO BORDES CURVOS */
+        border-radius: 0 !important;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 2rem;
+      }
+
+      /* === AUTH CONTAINER === */
+      .auth-container {
+        background: var(--surface-color);
+        padding: 3rem;
+        width: 100%;
+        max-width: 450px;
+        border: 1px solid var(--border-color);
+        position: relative;
+        box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.05);
+      }
+
+      .auth-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: var(--text-main);
+      }
+
+      .auth-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+      }
+
+      .auth-header i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .auth-header h1 {
+        font-weight: 800;
+        font-size: 1.8rem;
+        letter-spacing: -1px;
+        text-transform: uppercase;
+      }
+
+      /* === TABS === */
+      .tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 1rem;
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .tab-btn.active {
+        color: var(--text-main);
+      }
+
+      .tab-btn.active::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--text-main);
+      }
+
+      /* === FORM === */
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid var(--border-color);
+        background: var(--bg-color);
+        font-size: 1rem;
+        outline: none;
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+      }
+
+      .form-control:focus {
+        border-color: var(--border-focus);
+        background: var(--surface-color);
+      }
+
+      .btn {
+        width: 100%;
+        padding: 1rem;
+        background: var(--text-main);
+        color: var(--surface-color);
+        border: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+      }
+
+      .btn:hover {
+        background: var(--btn-hover);
+      }
+
+      .btn:disabled {
+        background: var(--border-color);
+        cursor: not-allowed;
+      }
+
+      /* === PASSWORD TOGGLE === */
+      .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .password-wrapper .form-control {
+        padding-right: 2.5rem;
+        /* Evita que el texto pase por debajo del icono */
+      }
+
+      .toggle-password {
+        position: absolute;
+        right: 1rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+
+      .toggle-password:hover {
+        color: var(--text-main);
+      }
+
+      /* === MESSAGES === */
+      .error-message {
+        color: var(--error-color);
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 1rem;
+        text-align: center;
+        min-height: 1.2rem;
+      }
+
+      .success-message {
+        color: #2e7d32;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 1rem;
+        text-align: center;
+        min-height: 1.2rem;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      footer {
+        border-top: 3px solid var(--border-light);
+        margin-top: 5rem;
+      }
+
+      .footerContent {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+      }
+
+      .footerContent p:first-child {
+        opacity: 0.5;
+      }
+
+      .footerContent p:nth-child(2) {
+        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        gap: 1rem;
+      }
+
+      .footerContent a {
+        color: var(--text-main);
+        text-decoration: none;
+        position: relative;
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+      }
+
+      .footerContent a::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background-color: var(--text-main);
+        transition: width 0.3s ease;
+      }
+
+      .footerContent a:hover::after {
+        width: 100%;
+      }
+
+      .footerContent a:hover {
+        opacity: 1;
+      }
+
+      /* ========================================= */
+      /* === MEDIA QUERIES - RESPONSIVE DESIGN === */
+      /* ========================================= */
+
+      /* TABLET LANDSCAPE - 1024px */
+      @media (max-width: 1024px) {
+        .container {
+          padding: 1.5rem;
         }
 
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --surface-color: #1e1e1e;
-            --border-color: #333333;
-            --border-focus: #ffffff;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --btn-bg: #ffffff;
-            --btn-text: #000000;
-            --btn-hover: #e0e0e0;
-            --card-bg: #4d4d4d;
-
-            --border-color: #333333;
-            --text-muted: #a0a0a0;
-            --text-main: #ffffff;
-
-            --border-light: #1d1d1d;
+        h1 {
+          font-size: 2rem;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-            /* REGLA OBLIGATORIA: CERO BORDES CURVOS */
-            border-radius: 0 !important;
+        .dashboard {
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1rem;
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 2rem;
+        .card {
+          padding: 1.5rem;
         }
 
-        /* === AUTH CONTAINER === */
-        .auth-container {
-            background: var(--surface-color);
-            padding: 3rem;
-            width: 100%;
-            max-width: 450px;
-            border: 1px solid var(--border-color);
-            position: relative;
-            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.05);
+        .card-value {
+          font-size: 2rem;
+        }
+      }
+
+      /* TABLET PORTRAIT - 900px */
+      @media (max-width: 900px) {
+        .main-grid {
+          grid-template-columns: 1fr;
         }
 
-        .auth-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background-color: var(--text-main);
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-
-        .auth-header i {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .auth-header h1 {
-            font-weight: 800;
-            font-size: 1.8rem;
-            letter-spacing: -1px;
-            text-transform: uppercase;
-        }
-
-        /* === TABS === */
-        .tabs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 1rem;
-            font-size: 0.85rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .tab-btn.active {
-            color: var(--text-main);
-        }
-
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: var(--text-main);
-        }
-
-        /* === FORM === */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid var(--border-color);
-            background: var(--bg-color);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s, background 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--border-focus);
-            background: var(--surface-color);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 1rem;
-            background: var(--text-main);
-            color: var(--surface-color);
-            border: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: background 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 2rem;
-        }
-
-        .btn:hover {
-            background: var(--btn-hover);
-        }
-
-        .btn:disabled {
-            background: var(--border-color);
-            cursor: not-allowed;
-        }
-
-        /* === PASSWORD TOGGLE === */
-        .password-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .password-wrapper .form-control {
-            padding-right: 2.5rem;
-            /* Evita que el texto pase por debajo del icono */
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 1rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .toggle-password:hover {
-            color: var(--text-main);
-        }
-
-        /* === MESSAGES === */
-        .error-message {
-            color: var(--error-color);
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 1rem;
-            text-align: center;
-            min-height: 1.2rem;
-        }
-
-        .success-message {
-            color: #2e7d32;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 1rem;
-            text-align: center;
-            min-height: 1.2rem;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        footer {
-            border-top: 3px solid var(--border-light);
+        .list-body {
+          max-height: 400px;
         }
 
         .footerContent {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 2rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+
+      /* MOBILE LANDSCAPE - 768px */
+      @media (max-width: 768px) {
+        .topbar {
+          padding: 1rem;
         }
 
-        .footerContent p:first-child {
-            opacity: 0.5;
+        .user-email-tag {
+          font-size: 0.75rem;
+          padding: 0.4rem 0.8rem;
+        }
+
+        .user-dropdown {
+          right: 0;
+          left: auto;
+        }
+
+        header {
+          margin-bottom: 2rem;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        h1 {
+          font-size: 1.75rem;
+        }
+
+        #exchange-container {
+          width: 100%;
+        }
+
+        .dashboard {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+
+        .form-panel {
+          padding: 1.5rem;
+        }
+
+        .form-panel h2 {
+          font-size: 1rem;
+        }
+
+        .row-group {
+          grid-template-columns: 1fr;
+        }
+
+        /* LISTA RESPONSIVE - LAYOUT APILADO */
+        .list-header {
+          display: none;
+        }
+
+        .list-item {
+          grid-template-columns: 1fr;
+          padding: 1.25rem 1rem;
+          gap: 0.75rem;
+        }
+
+        .list-item > div {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+
+        .list-item > div:nth-child(4) {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+        }
+
+        .item-name {
+          font-size: 1rem;
+          order: 1;
+        }
+
+        .item-category {
+          font-size: 0.7rem;
+          order: 2;
+        }
+
+        .list-item > div:nth-child(2) {
+          order: 3;
+          flex-direction: row;
+          align-items: baseline;
+          gap: 0.5rem;
+        }
+
+        .list-item > div:nth-child(2)::before {
+          content: "VALOR ORIGINAL:";
+          font-size: 0.7rem;
+          font-weight: 800;
+          color: var(--text-muted);
+        }
+
+        .list-item > div:nth-child(3) {
+          order: 4;
+          flex-direction: row;
+          align-items: baseline;
+          gap: 0.5rem;
+        }
+
+        .btn-delete {
+          order: 5;
+          align-self: flex-end;
+        }
+      }
+
+      /* MOBILE PORTRAIT - 480px */
+      @media (max-width: 480px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .topbar {
+          padding: 0.75rem;
+          flex-wrap: wrap;
+        }
+
+        .user-actions {
+          gap: 0.25rem;
+        }
+
+        .user-email-tag {
+          font-size: 0.7rem;
+          padding: 0.35rem 0.6rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 150px;
+        }
+
+        .logout-btn {
+          padding: 0.35rem 0.6rem;
+          font-size: 0.9rem;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .card {
+          padding: 1.25rem;
+        }
+
+        .card-title {
+          font-size: 0.75rem;
+        }
+
+        .card-value {
+          font-size: 1.75rem;
+        }
+
+        .exchange-rate {
+          font-size: 0.75rem;
+          padding: 0.4rem 0.8rem;
+        }
+
+        .exchange-rate-label {
+          font-size: 0.65rem;
+        }
+
+        .btn-edit-rate {
+          width: 30px;
+          height: 30px;
+        }
+
+        .form-panel {
+          padding: 1rem;
+        }
+
+        .form-panel h2 {
+          font-size: 0.95rem;
+          margin-bottom: 1rem;
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
+        }
+
+        .form-group label {
+          font-size: 0.75rem;
+        }
+
+        .form-control {
+          padding: 0.6rem;
+          font-size: 0.9rem;
+        }
+
+        .btn {
+          padding: 0.8rem;
+          font-size: 0.8rem;
+        }
+
+        /* LISTA MÁS COMPACTA EN MÓVIL */
+        .list-item {
+          padding: 1rem 0.75rem;
+          gap: 0.5rem;
+        }
+
+        .item-name {
+          font-size: 0.9rem;
+        }
+
+        .item-category {
+          font-size: 0.65rem;
+        }
+
+        .item-price {
+          font-size: 0.9rem;
+        }
+
+        .item-converted {
+          font-size: 0.8rem;
+        }
+
+        .list-item > div:nth-child(2)::before,
+        .list-item > div:nth-child(3)::before {
+          font-size: 0.65rem;
+        }
+
+        .btn-delete {
+          width: 36px;
+          height: 36px;
+        }
+
+        .installment-info {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+
+        .checkbox-group {
+          font-size: 0.75rem;
+        }
+
+        .badge {
+          font-size: 0.65rem;
+          padding: 0.15rem 0.4rem;
+        }
+      }
+
+      /* MOBILE SMALL - 375px */
+      @media (max-width: 375px) {
+        h1 {
+          font-size: 1.25rem;
+        }
+
+        .card-value {
+          font-size: 1.5rem;
+        }
+
+        .item-price {
+          font-size: 0.75rem;
+        }
+
+        .empty-state {
+          padding: 3rem 1rem;
+        }
+
+        .empty-state i {
+          font-size: 2rem;
+        }
+      }
+
+      @media (max-width: 587px) {
+        .footerContent {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
         }
 
         .footerContent p:nth-child(2) {
-            text-align: right;
-            display: flex;
-            align-items: center;
-            justify-content: right;
-            gap: 1rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
         }
 
-        .footerContent a {
-            color: var(--text-main);
-            text-decoration: none;
-            position: relative;
-            opacity: 0.5;
-            transition: opacity 0.3s ease;
+        .footerContent p:first-child {
+          text-align: center;
+        }
+      }
+
+      /* LANDSCAPE ORIENTATION */
+      @media (max-height: 600px) and (orientation: landscape) {
+        .list-body {
+          max-height: 300px;
         }
 
-        .footerContent a::after {
-            content: "";
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background-color: var(--text-main);
-            transition: width 0.3s ease;
+        .dashboard {
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         }
 
-        .footerContent a:hover::after {
-            width: 100%;
+        .card {
+          padding: 1rem;
         }
 
-        .footerContent a:hover {
-            opacity: 1;
+        .card-value {
+          font-size: 1.5rem;
         }
-
-        /* ========================================= */
-        /* === MEDIA QUERIES - RESPONSIVE DESIGN === */
-        /* ========================================= */
-
-        /* TABLET LANDSCAPE - 1024px */
-        @media (max-width: 1024px) {
-            .container {
-                padding: 1.5rem;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .dashboard {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 1rem;
-            }
-
-            .card {
-                padding: 1.5rem;
-            }
-
-            .card-value {
-                font-size: 2rem;
-            }
-        }
-
-        /* TABLET PORTRAIT - 900px */
-        @media (max-width: 900px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .list-body {
-                max-height: 400px;
-            }
-
-            .footerContent {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-        }
-
-        /* MOBILE LANDSCAPE - 768px */
-        @media (max-width: 768px) {
-            .topbar {
-                padding: 1rem;
-            }
-
-            .user-email-tag {
-                font-size: 0.75rem;
-                padding: 0.4rem 0.8rem;
-            }
-
-            .user-dropdown {
-                right: 0;
-                left: auto;
-            }
-
-            header {
-                margin-bottom: 2rem;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            h1 {
-                font-size: 1.75rem;
-            }
-
-            #exchange-container {
-                width: 100%;
-            }
-
-            .dashboard {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-                margin-bottom: 2rem;
-            }
-
-            .form-panel {
-                padding: 1.5rem;
-            }
-
-            .form-panel h2 {
-                font-size: 1rem;
-            }
-
-            .row-group {
-                grid-template-columns: 1fr;
-            }
-
-            /* LISTA RESPONSIVE - LAYOUT APILADO */
-            .list-header {
-                display: none;
-            }
-
-            .list-item {
-                grid-template-columns: 1fr;
-                padding: 1.25rem 1rem;
-                gap: 0.75rem;
-            }
-
-            .list-item>div {
-                display: flex;
-                flex-direction: column;
-                gap: 0.25rem;
-            }
-
-            .list-item>div:nth-child(4) {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-            }
-
-            .item-name {
-                font-size: 1rem;
-                order: 1;
-            }
-
-            .item-category {
-                font-size: 0.7rem;
-                order: 2;
-            }
-
-            .list-item>div:nth-child(2) {
-                order: 3;
-                flex-direction: row;
-                align-items: baseline;
-                gap: 0.5rem;
-            }
-
-            .list-item>div:nth-child(2)::before {
-                content: 'VALOR ORIGINAL:';
-                font-size: 0.7rem;
-                font-weight: 800;
-                color: var(--text-muted);
-            }
-
-            .list-item>div:nth-child(3) {
-                order: 4;
-                flex-direction: row;
-                align-items: baseline;
-                gap: 0.5rem;
-            }
-
-            .btn-delete {
-                order: 5;
-                align-self: flex-end;
-            }
-        }
-
-        /* MOBILE PORTRAIT - 480px */
-        @media (max-width: 480px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .topbar {
-                padding: 0.75rem;
-                flex-wrap: wrap;
-            }
-
-            .user-actions {
-                gap: 0.25rem;
-            }
-
-            .user-email-tag {
-                font-size: 0.7rem;
-                padding: 0.35rem 0.6rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 150px;
-            }
-
-            .logout-btn {
-                padding: 0.35rem 0.6rem;
-                font-size: 0.9rem;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .card {
-                padding: 1.25rem;
-            }
-
-            .card-title {
-                font-size: 0.75rem;
-            }
-
-            .card-value {
-                font-size: 1.75rem;
-            }
-
-            .exchange-rate {
-                font-size: 0.75rem;
-                padding: 0.4rem 0.8rem;
-            }
-
-            .exchange-rate-label {
-                font-size: 0.65rem;
-            }
-
-            .btn-edit-rate {
-                width: 30px;
-                height: 30px;
-            }
-
-            .form-panel {
-                padding: 1rem;
-            }
-
-            .form-panel h2 {
-                font-size: 0.95rem;
-                margin-bottom: 1rem;
-            }
-
-            .form-group {
-                margin-bottom: 1rem;
-            }
-
-            .form-group label {
-                font-size: 0.75rem;
-            }
-
-            .form-control {
-                padding: 0.6rem;
-                font-size: 0.9rem;
-            }
-
-            .btn {
-                padding: 0.8rem;
-                font-size: 0.8rem;
-            }
-
-            /* LISTA MÁS COMPACTA EN MÓVIL */
-            .list-item {
-                padding: 1rem 0.75rem;
-                gap: 0.5rem;
-            }
-
-            .item-name {
-                font-size: 0.9rem;
-            }
-
-            .item-category {
-                font-size: 0.65rem;
-            }
-
-            .item-price {
-                font-size: 0.9rem;
-            }
-
-            .item-converted {
-                font-size: 0.8rem;
-            }
-
-            .list-item>div:nth-child(2)::before,
-            .list-item>div:nth-child(3)::before {
-                font-size: 0.65rem;
-            }
-
-            .btn-delete {
-                width: 36px;
-                height: 36px;
-            }
-
-            .installment-info {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-
-            .checkbox-group {
-                font-size: 0.75rem;
-            }
-
-            .badge {
-                font-size: 0.65rem;
-                padding: 0.15rem 0.4rem;
-            }
-        }
-
-        /* MOBILE SMALL - 375px */
-        @media (max-width: 375px) {
-            h1 {
-                font-size: 1.25rem;
-            }
-
-            .card-value {
-                font-size: 1.5rem;
-            }
-
-            .item-price {
-                font-size: 0.75rem;
-            }
-
-            .empty-state {
-                padding: 3rem 1rem;
-            }
-
-            .empty-state i {
-                font-size: 2rem;
-            }
-        }
-
-        @media (max-width: 587px) {
-            .footerContent {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .footerContent p:nth-child(2) {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-
-            .footerContent p:first-child {
-                text-align: center;
-            }
-        }
-
-        /* LANDSCAPE ORIENTATION */
-        @media (max-height: 600px) and (orientation: landscape) {
-            .list-body {
-                max-height: 300px;
-            }
-
-            .dashboard {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-
-            .card {
-                padding: 1rem;
-            }
-
-            .card-value {
-                font-size: 1.5rem;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <div class="auth-container gsap-fade">
-        <div class="auth-header">
-            <i class="fa-solid fa-fingerprint"></i>
-            <h1>Acceso Seguro</h1>
+      <div class="auth-header">
+        <i class="fa-solid fa-fingerprint"></i>
+        <h1>Acceso Seguro</h1>
+      </div>
+
+      <div class="tabs">
+        <button
+          class="tab-btn active"
+          id="tab-login"
+          onclick="switchTab('login')"
+          title="Pestaña para iniciar sesión"
+        >
+          Ingresar
+        </button>
+        <button
+          class="tab-btn"
+          id="tab-register"
+          onclick="switchTab('register')"
+          title="Pestaña para crear una cuenta nueva"
+        >
+          Registrarse
+        </button>
+      </div>
+
+      <form id="auth-form">
+        <div class="form-group">
+          <label for="email" title="Etiqueta del correo electrónico"
+            >Correo Electrónico</label
+          >
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            placeholder="tu@correo.com"
+            required
+            title="Ingresa tu dirección de correo electrónico registrada"
+          />
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" id="tab-login" onclick="switchTab('login')"
-                title="Pestaña para iniciar sesión">Ingresar</button>
-            <button class="tab-btn" id="tab-register" onclick="switchTab('register')"
-                title="Pestaña para crear una cuenta nueva">Registrarse</button>
+        <div class="form-group">
+          <label for="password" title="Etiqueta de la contraseña"
+            >Contraseña</label
+          >
+          <div class="password-wrapper">
+            <input
+              type="password"
+              id="password"
+              class="form-control"
+              placeholder="••••••••"
+              required
+              title="Ingresa tu contraseña de seguridad"
+            />
+            <i
+              class="fa-solid fa-eye toggle-password"
+              onclick="togglePasswordVisibility()"
+              id="toggle-icon"
+              title="Mostrar/Ocultar la contraseña"
+            ></i>
+          </div>
         </div>
 
-        <form id="auth-form">
-            <div class="form-group">
-                <label for="email" title="Etiqueta del correo electrónico">Correo Electrónico</label>
-                <input type="email" id="email" class="form-control" placeholder="tu@correo.com" required
-                    title="Ingresa tu dirección de correo electrónico registrada">
-            </div>
+        <button
+          type="submit"
+          class="btn"
+          id="submit-btn"
+          title="Haz clic para procesar tu solicitud de acceso"
+        >
+          <span id="btn-text">Ingresar</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
 
-            <div class="form-group">
-                <label for="password" title="Etiqueta de la contraseña">Contraseña</label>
-                <div class="password-wrapper">
-                    <input type="password" id="password" class="form-control" placeholder="••••••••" required
-                        title="Ingresa tu contraseña de seguridad">
-                    <i class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility()" id="toggle-icon"
-                        title="Mostrar/Ocultar la contraseña"></i>
-                </div>
-            </div>
-
-            <button type="submit" class="btn" id="submit-btn" title="Haz clic para procesar tu solicitud de acceso">
-                <span id="btn-text">Ingresar</span>
-                <i class="fa-solid fa-arrow-right"></i>
-            </button>
-        </form>
-
-        <div id="feedback-msg" class="error-message" title="Área de notificaciones del sistema"></div>
+      <div
+        id="feedback-msg"
+        class="error-message"
+        title="Área de notificaciones del sistema"
+      ></div>
     </div>
     <footer>
-        <div class="container">
-            <div class="footerContent">
-                <p>© 2026 GM. Todos los derechos reservados.</p>
-                <p>
-                    <a href="">Contacto</a>
-                    <a href="">Sugerencias</a>
-                    <a href="">Política de Privacidad</a>
-                    <a href="">Términos de Uso</a>
-                </p>
-            </div>
+      <div class="container">
+        <div class="footerContent">
+          <p>© 2026 GM. Todos los derechos reservados.</p>
+          <p>
+            <a href="">Contacto</a>
+            <a href="">Sugerencias</a>
+            <a href="">Política de Privacidad</a>
+            <a href="">Términos de Uso</a>
+          </p>
         </div>
+      </div>
     </footer>
 
     <!-- Integración Firebase Auth -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-        import { getDatabase, ref, set, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        update,
+      } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-        // Tu configuración de Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyC-03EXQWiqdFsRG0zWaF0Y-5goSyjZsXg",
-            authDomain: "gastos-generales.firebaseapp.com",
-            databaseURL: "https://gastos-generales-default-rtdb.firebaseio.com",
-            projectId: "gastos-generales",
-            storageBucket: "gastos-generales.firebasestorage.app",
-            messagingSenderId: "154259308690",
-            appId: "1:154259308690:web:9924d809ba3d9f0b27664b"
-        };
+      // Tu configuración de Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyC-03EXQWiqdFsRG0zWaF0Y-5goSyjZsXg",
+        authDomain: "gastos-generales.firebaseapp.com",
+        databaseURL: "https://gastos-generales-default-rtdb.firebaseio.com",
+        projectId: "gastos-generales",
+        storageBucket: "gastos-generales.firebasestorage.app",
+        messagingSenderId: "154259308690",
+        appId: "1:154259308690:web:9924d809ba3d9f0b27664b",
+      };
 
-        // Iniciar Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
+      // Iniciar Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getDatabase(app);
 
-        // Variables de estado
-        let isLoginMode = true;
+      // Variables de estado
+      let isLoginMode = true;
 
-        // Elementos del DOM
-        const form = document.getElementById('auth-form');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const submitBtn = document.getElementById('submit-btn');
-        const btnText = document.getElementById('btn-text');
-        const feedbackMsg = document.getElementById('feedback-msg');
+      // Elementos del DOM
+      const form = document.getElementById("auth-form");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const submitBtn = document.getElementById("submit-btn");
+      const btnText = document.getElementById("btn-text");
+      const feedbackMsg = document.getElementById("feedback-msg");
 
-        // Función para cambiar de pestaña (expuesta a window para el onclick HTML)
-        window.switchTab = function (mode) {
-            isLoginMode = mode === 'login';
+      // Función para cambiar de pestaña (expuesta a window para el onclick HTML)
+      window.switchTab = function (mode) {
+        isLoginMode = mode === "login";
 
-            // Actualizar UI de pestañas
-            document.getElementById('tab-login').classList.toggle('active', isLoginMode);
-            document.getElementById('tab-register').classList.toggle('active', !isLoginMode);
+        // Actualizar UI de pestañas
+        document
+          .getElementById("tab-login")
+          .classList.toggle("active", isLoginMode);
+        document
+          .getElementById("tab-register")
+          .classList.toggle("active", !isLoginMode);
 
-            // Actualizar textos
-            btnText.innerText = isLoginMode ? 'Ingresar' : 'Crear Cuenta';
-            feedbackMsg.innerText = '';
-            feedbackMsg.className = 'error-message';
+        // Actualizar textos
+        btnText.innerText = isLoginMode ? "Ingresar" : "Crear Cuenta";
+        feedbackMsg.innerText = "";
+        feedbackMsg.className = "error-message";
 
-            // Animación suave del formulario
-            gsap.fromTo(form, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 });
-        };
+        // Animación suave del formulario
+        gsap.fromTo(
+          form,
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.3 },
+        );
+      };
 
-        // Función para ver/ocultar contraseña
-        window.togglePasswordVisibility = function () {
-            const toggleIcon = document.getElementById('toggle-icon');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        };
+      // Función para ver/ocultar contraseña
+      window.togglePasswordVisibility = function () {
+        const toggleIcon = document.getElementById("toggle-icon");
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          toggleIcon.classList.remove("fa-eye");
+          toggleIcon.classList.add("fa-eye-slash");
+        } else {
+          passwordInput.type = "password";
+          toggleIcon.classList.remove("fa-eye-slash");
+          toggleIcon.classList.add("fa-eye");
+        }
+      };
 
-        // Manejar envío del formulario
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
+      // Manejar envío del formulario
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-            const email = emailInput.value.trim();
-            const password = passwordInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
 
-            if (!email || !password) {
-                showFeedback("Por favor, completa todos los campos.", true);
-                return;
-            }
-
-            // Deshabilitar botón mientras carga
-            submitBtn.disabled = true;
-            btnText.innerText = 'Procesando...';
-
-            if (isLoginMode) {
-                // MODO LOGIN
-                signInWithEmailAndPassword(auth, email, password)
-                    .then(async (userCredential) => {
-                        const user = userCredential.user;
-
-                        // Actualizar fecha de último login en la RTDB
-                        try {
-                            await update(ref(db, 'usuarios/' + user.uid), {
-                                lastLogin: new Date().toISOString()
-                            });
-                        } catch (dbError) {
-                            console.error("Error al actualizar la base de datos:", dbError);
-                        }
-
-                        showFeedback("¡Acceso exitoso! Redirigiendo...", false);
-                        // Redirigir al panel principal después de 1 segundo
-                        setTimeout(() => {
-                            window.location.href = '/';
-                        }, 1000);
-                    })
-                    .catch((error) => {
-                        handleAuthError(error);
-                        resetButton();
-                    });
-            } else {
-                // MODO REGISTRO
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then(async (userCredential) => {
-                        const user = userCredential.user;
-
-                        // Guardar los datos iniciales del usuario en la RTDB
-                        try {
-                            await set(ref(db, 'usuarios/' + user.uid), {
-                                email: user.email,
-                                createdAt: new Date().toISOString(),
-                                lastLogin: new Date().toISOString()
-                            });
-                        } catch (dbError) {
-                            console.error("Error al guardar en la base de datos:", dbError);
-                        }
-
-                        showFeedback("¡Cuenta creada con éxito! Redirigiendo...", false);
-                        // Redirigir al panel principal
-                        setTimeout(() => {
-                            window.location.href = '/';
-                        }, 1000);
-                    })
-                    .catch((error) => {
-                        handleAuthError(error);
-                        resetButton();
-                    });
-            }
-        });
-
-        // Funciones de utilidad
-        function showFeedback(message, isError) {
-            feedbackMsg.innerText = message;
-            feedbackMsg.className = isError ? 'error-message' : 'success-message';
+        if (!email || !password) {
+          showFeedback("Por favor, completa todos los campos.", true);
+          return;
         }
 
-        function resetButton() {
-            submitBtn.disabled = false;
-            btnText.innerText = isLoginMode ? 'Ingresar' : 'Crear Cuenta';
+        // Deshabilitar botón mientras carga
+        submitBtn.disabled = true;
+        btnText.innerText = "Procesando...";
+
+        if (isLoginMode) {
+          // MODO LOGIN
+          signInWithEmailAndPassword(auth, email, password)
+            .then(async (userCredential) => {
+              const user = userCredential.user;
+
+              // Actualizar fecha de último login en la RTDB
+              try {
+                await update(ref(db, "usuarios/" + user.uid), {
+                  lastLogin: new Date().toISOString(),
+                });
+              } catch (dbError) {
+                console.error("Error al actualizar la base de datos:", dbError);
+              }
+
+              showFeedback("¡Acceso exitoso! Redirigiendo...", false);
+              // Redirigir al panel principal después de 1 segundo
+              setTimeout(() => {
+                window.location.href = "/";
+              }, 1000);
+            })
+            .catch((error) => {
+              handleAuthError(error);
+              resetButton();
+            });
+        } else {
+          // MODO REGISTRO
+          createUserWithEmailAndPassword(auth, email, password)
+            .then(async (userCredential) => {
+              const user = userCredential.user;
+
+              // Guardar los datos iniciales del usuario en la RTDB
+              try {
+                await set(ref(db, "usuarios/" + user.uid), {
+                  email: user.email,
+                  createdAt: new Date().toISOString(),
+                  lastLogin: new Date().toISOString(),
+                });
+              } catch (dbError) {
+                console.error("Error al guardar en la base de datos:", dbError);
+              }
+
+              showFeedback("¡Cuenta creada con éxito! Redirigiendo...", false);
+              // Redirigir al panel principal
+              setTimeout(() => {
+                window.location.href = "/";
+              }, 1000);
+            })
+            .catch((error) => {
+              handleAuthError(error);
+              resetButton();
+            });
+        }
+      });
+
+      // Funciones de utilidad
+      function showFeedback(message, isError) {
+        feedbackMsg.innerText = message;
+        feedbackMsg.className = isError ? "error-message" : "success-message";
+      }
+
+      function resetButton() {
+        submitBtn.disabled = false;
+        btnText.innerText = isLoginMode ? "Ingresar" : "Crear Cuenta";
+      }
+
+      function handleAuthError(error) {
+        const errorCode = error.code;
+        let errorMessage = "Ocurrió un error. Inténtalo de nuevo.";
+
+        switch (errorCode) {
+          case "auth/invalid-email":
+            errorMessage = "El correo electrónico no es válido.";
+            break;
+          case "auth/user-disabled":
+            errorMessage = "Este usuario ha sido deshabilitado.";
+            break;
+          case "auth/user-not-found":
+            errorMessage = "No existe una cuenta con este correo.";
+            break;
+          case "auth/wrong-password":
+            errorMessage = "Contraseña incorrecta.";
+            break;
+          case "auth/email-already-in-use":
+            errorMessage = "El correo ya está registrado en otra cuenta.";
+            break;
+          case "auth/weak-password":
+            errorMessage = "La contraseña debe tener al menos 6 caracteres.";
+            break;
+          case "auth/invalid-credential":
+            errorMessage =
+              "Credenciales inválidas. Verifica tu correo y contraseña.";
+            break;
         }
 
-        function handleAuthError(error) {
-            const errorCode = error.code;
-            let errorMessage = "Ocurrió un error. Inténtalo de nuevo.";
+        showFeedback(errorMessage, true);
+        // Animación de error (shake)
+        gsap.fromTo(
+          form,
+          { x: -5 },
+          {
+            x: 5,
+            duration: 0.1,
+            yoyo: true,
+            repeat: 3,
+            onComplete: () => gsap.set(form, { x: 0 }),
+          },
+        );
+      }
 
-            switch (errorCode) {
-                case 'auth/invalid-email':
-                    errorMessage = "El correo electrónico no es válido.";
-                    break;
-                case 'auth/user-disabled':
-                    errorMessage = "Este usuario ha sido deshabilitado.";
-                    break;
-                case 'auth/user-not-found':
-                    errorMessage = "No existe una cuenta con este correo.";
-                    break;
-                case 'auth/wrong-password':
-                    errorMessage = "Contraseña incorrecta.";
-                    break;
-                case 'auth/email-already-in-use':
-                    errorMessage = "El correo ya está registrado en otra cuenta.";
-                    break;
-                case 'auth/weak-password':
-                    errorMessage = "La contraseña debe tener al menos 6 caracteres.";
-                    break;
-                case 'auth/invalid-credential':
-                    errorMessage = "Credenciales inválidas. Verifica tu correo y contraseña.";
-                    break;
-            }
-
-            showFeedback(errorMessage, true);
-            // Animación de error (shake)
-            gsap.fromTo(form, { x: -5 }, { x: 5, duration: 0.1, yoyo: true, repeat: 3, onComplete: () => gsap.set(form, { x: 0 }) });
-        }
-
-        // Animación inicial
-        document.addEventListener('DOMContentLoaded', () => {
-            gsap.fromTo(".gsap-fade",
-                { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
-            );
-        });
-
+      // Animación inicial
+      document.addEventListener("DOMContentLoaded", () => {
+        gsap.fromTo(
+          ".gsap-fade",
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+        );
+      });
     </script>
-</body>
-
+  </body>
 </html>
