@@ -1,1023 +1,889 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es" data-theme="light">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Configuración | Gestor Minimalista</title>
 
-    <!-- Tipografía Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
-
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- GSAP -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-    <!-- Script de Tema Temprano (Evita parpadeos) -->
     <script>
-        const savedTheme = localStorage.getItem('gestor_theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+      const savedTheme = localStorage.getItem("gestor_theme") || "light";
+      document.documentElement.setAttribute("data-theme", savedTheme);
     </script>
 
     <style>
-        /* === VARIABLES & RESET === */
-        :root {
-            --bg-color: #f5f5f5;
-            --surface-color: #ffffff;
-            --border-color: #cccccc;
-            --border-focus: #000000;
-            --text-main: #000000;
-            --text-muted: #666666;
-            --btn-hover: #333333;
-            --error-color: #d32f2f;
-            --card-bg: #fafafa;
-            --border-light: #ebebeb;
-        }
+      :root {
+        --bg-color: #f5f5f5;
+        --surface-color: #ffffff;
+        --border-color: #cccccc;
+        --border-focus: #000000;
+        --text-main: #000000;
+        --text-muted: #666666;
+        --btn-hover: #333333;
+        --error-color: #d32f2f;
+        --card-bg: #fafafa;
+        --border-light: #ebebeb;
+        --btn-bg: #000000;
+        --btn-text: #ffffff;
+      }
 
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --surface-color: #1e1e1e;
-            --border-color: #333333;
-            --border-focus: #ffffff;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --btn-bg: #ffffff;
-            --btn-text: #000000;
-            --btn-hover: #e0e0e0;
-            --card-bg: #4d4d4d;
+      [data-theme="dark"] {
+        --bg-color: #121212;
+        --surface-color: #1e1e1e;
+        --border-color: #333333;
+        --border-focus: #ffffff;
+        --text-main: #ffffff;
+        --text-muted: #a0a0a0;
+        --btn-bg: #ffffff;
+        --btn-text: #000000;
+        --btn-hover: #e0e0e0;
+        --card-bg: #4d4d4d;
+        --border-light: #1d1d1d;
+      }
 
-            --border-color: #333333;
-            --text-muted: #a0a0a0;
-            --text-main: #ffffff;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+        border-radius: 0 !important;
+      }
 
-            --border-light: #1d1d1d;
-        }
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        line-height: 1.6;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-            /* REGLA OBLIGATORIA: CERO BORDES CURVOS */
-            border-radius: 0 !important;
-        }
+      .topbar {
+        background: var(--surface-color);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
+      }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
-        }
+      .back-btn {
+        text-decoration: none;
+        color: var(--text-main);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color 0.3s;
+      }
 
-        /* === TOPBAR DE USUARIO === */
-        .topbar {
-            background: var(--surface-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
+      .back-btn:hover {
+        color: var(--text-muted);
+      }
 
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-main);
-            font-weight: 800;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: color 0.3s;
-        }
+      .container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
 
-        .back-btn:hover {
-            color: var(--text-muted);
-        }
+      header {
+        margin-bottom: 2rem;
+        border-bottom: 2px solid var(--text-main);
+        padding-bottom: 1rem;
+      }
 
-        /* === LAYOUT === */
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
+      h1 {
+        font-weight: 800;
+        font-size: 2.5rem;
+        letter-spacing: -1px;
+        text-transform: uppercase;
+      }
 
-        header {
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--text-main);
-            padding-bottom: 1rem;
-        }
+      .config-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 2rem;
+      }
 
-        h1 {
-            font-weight: 800;
-            font-size: 2.5rem;
-            letter-spacing: -1px;
-            text-transform: uppercase;
-        }
+      .card {
+        background: var(--surface-color);
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        position: relative;
+        transition: all 0.3s;
+      }
 
-        /* === CONFIG GRID === */
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 2rem;
-        }
+      .card.full-width {
+        margin-bottom: 2rem;
+      }
 
-        .card {
-            background: var(--surface-color);
-            padding: 2rem;
-            border: 1px solid var(--border-color);
-            position: relative;
-            transition: all 0.3s;
-        }
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: var(--text-main);
+      }
+      .danger {
+        margin-top: 2rem;
+      }
 
-        .card.full-width {
-            margin-bottom: 2rem;
-        }
+      .card.danger::before {
+        background-color: var(--error-color);
+      }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background-color: var(--text-main);
-        }
+      /* === BUDGET CARD ACCENT === */
+      .card.budget::before {
+        background-color: var(--text-main);
+      }
 
-        .card.danger::before {
-            background-color: var(--error-color);
-        }
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 1.2rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.5rem;
+      }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            font-size: 1.2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
+      .card-desc {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+      }
 
-        .card-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
+      .card-desc-bottom {
+        font-style: italic;
+        color: var(--text-muted);
+        margin-top: 1.5rem;
+      }
 
-        .card-desc-bottom {
-            font-style: italic;
-            color: var(--text-muted);
-            margin-top: 1.5rem;
-        }
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
 
-        /* === FORM & CONTROLS === */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+      .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+      }
 
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
+      .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid var(--border-color);
+        background: var(--bg-color);
+        color: var(--text-main);
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.3s;
+      }
 
-        .form-control {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid var(--border-color);
-            background: var(--bg-color);
-            color: var(--text-main);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s;
-        }
+      .form-control:focus {
+        border-color: var(--border-focus);
+        background: var(--surface-color);
+      }
 
-        .form-control:focus {
-            border-color: var(--border-focus);
-            background: var(--surface-color);
-        }
+      /* Budget row: two inputs side by side */
+      .budget-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
 
-        .btn {
-            width: 100%;
-            padding: 1rem;
-            background: var(--btn-bg);
-            color: var(--btn-text);
-            border: 1px solid var(--border-focus);
-            font-size: 0.9rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-        }
+      .budget-currency-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
 
-        .btn:hover {
-            background: var(--btn-hover);
-        }
+      .btn {
+        width: 100%;
+        padding: 1rem;
+        background: var(--btn-bg);
+        color: var(--btn-text);
+        border: 1px solid var(--border-focus);
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-        .btn-danger {
-            background: var(--error-color);
-            color: white;
-            border-color: var(--error-color);
-        }
+      .btn:hover {
+        opacity: 0.85;
+      }
 
-        .btn-danger:hover {
-            background: #b71c1c;
-        }
+      .btn-danger {
+        background: var(--error-color);
+        color: white;
+        border-color: var(--error-color);
+      }
 
-        /* === THEME TOGGLE === */
-        .theme-options {
-            display: flex;
-            gap: 1rem;
-        }
+      .btn-danger:hover {
+        background: #b71c1c;
+      }
 
-        .theme-btn {
-            flex: 1;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            background: var(--bg-color);
-            color: var(--text-main);
-            font-weight: 600;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
+      .theme-options {
+        display: flex;
+        gap: 1rem;
+      }
 
-        .theme-btn.active {
-            border-color: var(--text-main);
-            background: var(--surface-color);
-            box-shadow: inset 0 0 0 2px var(--text-main);
-        }
+      .theme-btn {
+        flex: 1;
+        padding: 1rem;
+        border: 1px solid var(--border-color);
+        background: var(--bg-color);
+        color: var(--text-main);
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-        .theme-btn:hover {
-            border-color: var(--text-main);
-        }
+      .theme-btn.active {
+        border-color: var(--text-main);
+        background: var(--surface-color);
+        box-shadow: inset 0 0 0 2px var(--text-main);
+      }
 
-        .theme-btn i {
-            font-size: 1.5rem;
-        }
+      .theme-btn:hover {
+        border-color: var(--text-main);
+      }
 
-        /* === MENSAJES FEEDBACK === */
-        .feedback-msg {
-            margin-top: 1rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-align: center;
-            padding: 0.5rem;
-            display: none;
-        }
+      .theme-btn i {
+        font-size: 1.5rem;
+      }
 
-        .feedback-msg.error {
-            display: block;
-            color: var(--error-color);
-            border: 1px solid var(--error-color);
-            background: rgba(211, 47, 47, 0.05);
-        }
+      .feedback-msg {
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        padding: 0.5rem;
+        display: none;
+      }
 
-        .feedback-msg.success {
-            display: block;
-            color: var(--success-color);
-            border: 1px solid var(--success-color);
-            background: rgba(46, 125, 50, 0.05);
-        }
+      .feedback-msg.error {
+        display: block;
+        color: var(--error-color);
+        border: 1px solid var(--error-color);
+        background: rgba(211, 47, 47, 0.05);
+      }
 
-        footer {
-            border-top: 3px solid var(--border-light);
-        }
+      .feedback-msg.success {
+        display: block;
+        color: #2e7d32;
+        border: 1px solid #2e7d32;
+        background: rgba(46, 125, 50, 0.05);
+      }
 
+      footer {
+        border-top: 3px solid var(--border-light);
+      }
+
+      .footerContent {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+      }
+
+      .footerContent p:first-child {
+        opacity: 0.5;
+      }
+
+      .footerContent p:nth-child(2) {
+        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        gap: 1rem;
+      }
+
+      .footerContent a {
+        color: var(--text-main);
+        text-decoration: none;
+        position: relative;
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+      }
+
+      .footerContent a::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background-color: var(--text-main);
+        transition: width 0.3s ease;
+      }
+
+      .footerContent a:hover::after {
+        width: 100%;
+      }
+      .footerContent a:hover {
+        opacity: 1;
+      }
+
+      @media (max-width: 900px) {
         .footerContent {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 2rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
         }
+      }
 
-        .footerContent p:first-child {
-            opacity: 0.5;
+      @media (max-width: 768px) {
+        .topbar {
+          padding: 1rem;
         }
+        h1 {
+          font-size: 1.75rem;
+        }
+        .config-grid {
+          grid-template-columns: 1fr;
+        }
+        .budget-row {
+          grid-template-columns: 1fr;
+        }
+      }
 
+      @media (max-width: 480px) {
+        .container {
+          padding: 1rem;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+        .card {
+          padding: 1.25rem;
+        }
+      }
+
+      @media (max-width: 587px) {
+        .footerContent {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
         .footerContent p:nth-child(2) {
-            text-align: right;
-            display: flex;
-            align-items: center;
-            justify-content: right;
-            gap: 1rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
         }
-
-        .footerContent a {
-            color: var(--text-main);
-            text-decoration: none;
-            position: relative;
-            opacity: 0.5;
-            transition: opacity 0.3s ease;
+        .footerContent p:first-child {
+          text-align: center;
         }
-
-        .footerContent a::after {
-            content: "";
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background-color: var(--text-main);
-            transition: width 0.3s ease;
-        }
-
-        .footerContent a:hover::after {
-            width: 100%;
-        }
-
-        .footerContent a:hover {
-            opacity: 1;
-        }
-
-        /* ========================================= */
-        /* === MEDIA QUERIES - RESPONSIVE DESIGN === */
-        /* ========================================= */
-
-        /* TABLET LANDSCAPE - 1024px */
-        @media (max-width: 1024px) {
-            .container {
-                padding: 1.5rem;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .dashboard {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 1rem;
-            }
-
-            .card {
-                padding: 1.5rem;
-            }
-
-            .card-value {
-                font-size: 2rem;
-            }
-        }
-
-        /* TABLET PORTRAIT - 900px */
-        @media (max-width: 900px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .list-body {
-                max-height: 400px;
-            }
-
-            .footerContent {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-        }
-
-        /* MOBILE LANDSCAPE - 768px */
-        @media (max-width: 768px) {
-            .topbar {
-                padding: 1rem;
-            }
-
-            .user-email-tag {
-                font-size: 0.75rem;
-                padding: 0.4rem 0.8rem;
-            }
-
-            .user-dropdown {
-                right: 0;
-                left: auto;
-            }
-
-            header {
-                margin-bottom: 2rem;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            h1 {
-                font-size: 1.75rem;
-            }
-
-            #exchange-container {
-                width: 100%;
-            }
-
-            .dashboard {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-                margin-bottom: 2rem;
-            }
-
-            .form-panel {
-                padding: 1.5rem;
-            }
-
-            .form-panel h2 {
-                font-size: 1rem;
-            }
-
-            .row-group {
-                grid-template-columns: 1fr;
-            }
-
-            /* LISTA RESPONSIVE - LAYOUT APILADO */
-            .list-header {
-                display: none;
-            }
-
-            .list-item {
-                grid-template-columns: 1fr;
-                padding: 1.25rem 1rem;
-                gap: 0.75rem;
-            }
-
-            .list-item>div {
-                display: flex;
-                flex-direction: column;
-                gap: 0.25rem;
-            }
-
-            .list-item>div:nth-child(4) {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-            }
-
-            .item-name {
-                font-size: 1rem;
-                order: 1;
-            }
-
-            .item-category {
-                font-size: 0.7rem;
-                order: 2;
-            }
-
-            .list-item>div:nth-child(2) {
-                order: 3;
-                flex-direction: row;
-                align-items: baseline;
-                gap: 0.5rem;
-            }
-
-            .list-item>div:nth-child(2)::before {
-                content: 'VALOR ORIGINAL:';
-                font-size: 0.7rem;
-                font-weight: 800;
-                color: var(--text-muted);
-            }
-
-            .list-item>div:nth-child(3) {
-                order: 4;
-                flex-direction: row;
-                align-items: baseline;
-                gap: 0.5rem;
-            }
-
-            .btn-delete {
-                order: 5;
-                align-self: flex-end;
-            }
-        }
-
-        /* MOBILE PORTRAIT - 480px */
-        @media (max-width: 480px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .topbar {
-                padding: 0.75rem;
-                flex-wrap: wrap;
-            }
-
-            .user-actions {
-                gap: 0.25rem;
-            }
-
-            .user-email-tag {
-                font-size: 0.7rem;
-                padding: 0.35rem 0.6rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 150px;
-            }
-
-            .logout-btn {
-                padding: 0.35rem 0.6rem;
-                font-size: 0.9rem;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .card {
-                padding: 1.25rem;
-            }
-
-            .card-title {
-                font-size: 0.75rem;
-            }
-
-            .card-value {
-                font-size: 1.75rem;
-            }
-
-            .exchange-rate {
-                font-size: 0.75rem;
-                padding: 0.4rem 0.8rem;
-            }
-
-            .exchange-rate-label {
-                font-size: 0.65rem;
-            }
-
-            .btn-edit-rate {
-                width: 30px;
-                height: 30px;
-            }
-
-            .form-panel {
-                padding: 1rem;
-            }
-
-            .form-panel h2 {
-                font-size: 0.95rem;
-                margin-bottom: 1rem;
-            }
-
-            .form-group {
-                margin-bottom: 1rem;
-            }
-
-            .form-group label {
-                font-size: 0.75rem;
-            }
-
-            .form-control {
-                padding: 0.6rem;
-                font-size: 0.9rem;
-            }
-
-            .btn {
-                padding: 0.8rem;
-                font-size: 0.8rem;
-            }
-
-            /* LISTA MÁS COMPACTA EN MÓVIL */
-            .list-item {
-                padding: 1rem 0.75rem;
-                gap: 0.5rem;
-            }
-
-            .item-name {
-                font-size: 0.9rem;
-            }
-
-            .item-category {
-                font-size: 0.65rem;
-            }
-
-            .item-price {
-                font-size: 0.9rem;
-            }
-
-            .item-converted {
-                font-size: 0.8rem;
-            }
-
-            .list-item>div:nth-child(2)::before,
-            .list-item>div:nth-child(3)::before {
-                font-size: 0.65rem;
-            }
-
-            .btn-delete {
-                width: 36px;
-                height: 36px;
-            }
-
-            .installment-info {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-
-            .checkbox-group {
-                font-size: 0.75rem;
-            }
-
-            .badge {
-                font-size: 0.65rem;
-                padding: 0.15rem 0.4rem;
-            }
-        }
-
-        /* MOBILE SMALL - 375px */
-        @media (max-width: 375px) {
-            h1 {
-                font-size: 1.25rem;
-            }
-
-            .card-value {
-                font-size: 1.5rem;
-            }
-
-            .item-price {
-                font-size: 0.75rem;
-            }
-
-            .empty-state {
-                padding: 3rem 1rem;
-            }
-
-            .empty-state i {
-                font-size: 2rem;
-            }
-        }
-
-        @media (max-width: 587px) {
-            .footerContent {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .footerContent p:nth-child(2) {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-
-            .footerContent p:first-child {
-                text-align: center;
-            }
-        }
-
-        /* LANDSCAPE ORIENTATION */
-        @media (max-height: 600px) and (orientation: landscape) {
-            .list-body {
-                max-height: 300px;
-            }
-
-            .dashboard {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-
-            .card {
-                padding: 1rem;
-            }
-
-            .card-value {
-                font-size: 1.5rem;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
-    <!-- NAV BAR SUPERIOR (Minimalista) -->
+  <body>
     <div class="topbar gsap-fade">
-        <a href="/" class="back-btn" title="Haz clic para regresar al panel principal de cotizaciones">
-            <i class="fa-solid fa-arrow-left"></i> Volver al Inicio
-        </a>
+      <a href="/" class="back-btn" title="Volver al panel principal">
+        <i class="fa-solid fa-arrow-left"></i> Volver al Inicio
+      </a>
     </div>
 
     <div class="container">
-        <header class="gsap-fade">
-            <h1 title="Título de la sección de ajustes">Configuración</h1>
-        </header>
+      <header class="gsap-fade">
+        <h1>Configuración</h1>
+      </header>
 
-        <!-- TARJETA: CAMBIAR CORREO (Sección Superior) -->
-        <div class="card full-width gsap-fade" style="animation-delay: 0.05s;"
-            title="Panel para gestionar tu correo electrónico">
-            <div class="card-header" title="Sección de correo de la cuenta">
-                <i class="fa-solid fa-envelope"></i> Correo Electrónico
+      <!-- TARJETA: CORREO -->
+      <div class="card full-width gsap-fade" style="animation-delay: 0.05s">
+        <div class="card-header">
+          <i class="fa-solid fa-envelope"></i> Correo Electrónico
+        </div>
+        <p class="card-desc">
+          Actualiza la dirección de correo electrónico vinculada a tu cuenta.
+          <br />Correo actual:
+          <strong id="current-email-display" style="color: var(--text-main)"
+            >Cargando...</strong
+          >
+        </p>
+        <form id="email-form">
+          <div class="form-group">
+            <label for="new-email">Nuevo Correo Electrónico</label>
+            <input
+              type="email"
+              id="new-email"
+              class="form-control"
+              placeholder="nuevo@correo.com"
+              required
+            />
+          </div>
+          <button type="submit" class="btn" id="btn-change-email">
+            <i class="fa-solid fa-envelope-circle-check"></i> Actualizar Correo
+          </button>
+        </form>
+        <div id="email-feedback" class="feedback-msg"></div>
+      </div>
+
+      <section class="config-grid">
+        <!-- ===== TARJETA: PRESUPUESTO MENSUAL (NUEVA) ===== -->
+        <div class="card budget gsap-fade" style="animation-delay: 0.08s">
+          <div class="card-header">
+            <i class="fa-solid fa-wallet"></i> Presupuesto Mensual
+          </div>
+          <p class="card-desc">
+            Ingresá cuánto dinero tenés disponible para gastar por mes. El
+            dashboard calculará automáticamente el equivalente en la otra moneda
+            usando tus cotizaciones configuradas.
+          </p>
+
+          <div class="form-group">
+            <label for="budget-amount">Monto Disponible por Mes</label>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 0.75rem;
+              "
+            >
+              <input
+                type="text"
+                id="budget-amount"
+                class="form-control"
+                placeholder="0.00"
+                oninput="formatBudgetInput(this)"
+                autocomplete="off"
+              />
+              <select
+                id="budget-currency"
+                class="form-control"
+                style="width: 90px"
+              >
+                <option value="ARS">ARS</option>
+                <option value="USD">USD</option>
+              </select>
             </div>
-            <p class="card-desc" title="Información de tu cuenta">Actualiza la dirección de correo electrónico vinculada
-                a tu cuenta. <br>Correo actual: <strong id="current-email-display"
-                    style="color: var(--text-main);">Cargando...</strong></p>
+          </div>
 
-            <form id="email-form">
-                <div class="form-group">
-                    <label for="new-email" title="Etiqueta para el nuevo correo">Nuevo Correo Electrónico</label>
-                    <input type="email" id="new-email" class="form-control" placeholder="nuevo@correo.com" required
-                        title="Ingresa aquí tu nueva dirección de correo">
-                </div>
-                <button type="submit" class="btn" title="Confirmar actualización de correo" id="btn-change-email">
-                    <i class="fa-solid fa-envelope-circle-check"></i> Actualizar Correo
-                </button>
-            </form>
-            <div id="email-feedback" class="feedback-msg"></div>
+          <button class="btn" id="btn-save-budget" onclick="saveBudget()">
+            <i class="fa-solid fa-floppy-disk"></i> Guardar Presupuesto
+          </button>
+          <div id="budget-feedback" class="feedback-msg"></div>
         </div>
 
-        <section class="config-grid">
+        <!-- TARJETA: APARIENCIA -->
+        <div class="card gsap-fade" style="animation-delay: 0.1s">
+          <div class="card-header">
+            <i class="fa-solid fa-palette"></i> Apariencia
+          </div>
+          <p class="card-desc">
+            Personaliza los colores de la interfaz. Se guardará en el navegador
+            y en la base de datos.
+          </p>
+          <div class="theme-options">
+            <button
+              class="theme-btn"
+              id="btn-light"
+              onclick="setTheme('light')"
+            >
+              <i class="fa-solid fa-sun"></i>
+              Modo Claro
+            </button>
+            <button class="theme-btn" id="btn-dark" onclick="setTheme('dark')">
+              <i class="fa-solid fa-moon"></i>
+              Modo Oscuro
+            </button>
+          </div>
+        </div>
 
-            <!-- TARJETA: APARIENCIA -->
-            <div class="card gsap-fade" style="animation-delay: 0.1s;"
-                title="Panel para cambiar los colores de la aplicación">
-                <div class="card-header" title="Sección de apariencia visual">
-                    <i class="fa-solid fa-palette"></i> Apariencia
-                </div>
-                <p class="card-desc" title="Descripción sobre la interfaz">Personaliza los colores de la interfaz. Se
-                    guardará en el navegador y en la base de datos.</p>
-
-                <div class="theme-options">
-                    <button class="theme-btn" id="btn-light" onclick="setTheme('light')"
-                        title="Haz clic para activar los colores claros">
-                        <i class="fa-solid fa-sun"></i>
-                        Modo Claro
-                    </button>
-                    <button class="theme-btn" id="btn-dark" onclick="setTheme('dark')"
-                        title="Haz clic para activar los colores oscuros">
-                        <i class="fa-solid fa-moon"></i>
-                        Modo Oscuro
-                    </button>
-                </div>
+        <!-- TARJETA: SEGURIDAD -->
+        <div class="card gsap-fade" style="animation-delay: 0.2s">
+          <div class="card-header">
+            <i class="fa-solid fa-shield-halved"></i> Seguridad
+          </div>
+          <p class="card-desc">
+            Cambia la contraseña de acceso de tu cuenta. Debe tener al menos 6
+            caracteres.
+          </p>
+          <form id="password-form">
+            <div class="form-group">
+              <label for="new-password">Nueva Contraseña</label>
+              <input
+                type="password"
+                id="new-password"
+                class="form-control"
+                placeholder="••••••••"
+                required
+                minlength="6"
+              />
             </div>
+            <button type="submit" class="btn" id="btn-change-pwd">
+              <i class="fa-solid fa-key"></i> Actualizar Contraseña
+            </button>
+          </form>
+          <div id="pwd-feedback" class="feedback-msg"></div>
+        </div>
 
-            <!-- TARJETA: SEGURIDAD (Cambiar Clave) -->
-            <div class="card gsap-fade" style="animation-delay: 0.2s;"
-                title="Panel para gestionar la seguridad de tu acceso">
-                <div class="card-header" title="Sección de seguridad de la cuenta">
-                    <i class="fa-solid fa-shield-halved"></i> Seguridad
-                </div>
-                <p class="card-desc" title="Descripción sobre la contraseña">Cambia la contraseña de acceso de tu
-                    cuenta. Debe tener al menos 6 caracteres.</p>
-
-                <form id="password-form">
-                    <div class="form-group">
-                        <label for="new-password" title="Etiqueta para escribir tu nueva clave">Nueva Contraseña</label>
-                        <input type="password" id="new-password" class="form-control" placeholder="••••••••" required
-                            minlength="6" title="Ingresa aquí la nueva clave que deseas usar">
-                    </div>
-                    <button type="submit" class="btn" title="Haz clic para confirmar el cambio de tu contraseña"
-                        id="btn-change-pwd">
-                        <i class="fa-solid fa-key"></i> Actualizar Contraseña
-                    </button>
-                </form>
-                <div id="pwd-feedback" class="feedback-msg"
-                    title="Área donde aparecen los mensajes del sistema sobre tu contraseña"></div>
-            </div>
-
-            <!-- TARJETA: CERRAR SESIÓN -->
-            <div class="card gsap-fade" style="animation-delay: 0.3s;"
-                title="Panel para cerrar sesión en este dispositivo">
-                <div class="card-header" title="Sección de cierre de sesión">
-                    <i class="fa-solid fa-power-off"></i> Cerrar Sesión
-                </div>
-                <p class="card-desc" title="Descripción de la acción de salir">Cierra tu sesión de forma segura. Tendrás
-                    que volver a ingresar tu correo y contraseña para acceder.</p>
-
-                <button class="btn" onclick="logout()" title="Haz clic para salir de tu cuenta"
-                    style="background: transparent; color: var(--text-main); border: 2px solid var(--text-main);">
-                    <i class="fa-solid fa-right-from-bracket"></i> Salir de la Cuenta
-                </button>
-            </div>
-
-            <!-- TARJETA: ZONA PELIGROSA (Eliminar Cuenta) -->
-            <div class="card danger gsap-fade" style="animation-delay: 0.4s;"
-                title="Panel crítico de eliminación de cuenta">
-                <div class="card-header" style="color: var(--error-color);" title="Sección de eliminación total">
-                    <i class="fa-solid fa-triangle-exclamation"></i> Zona Peligrosa
-                </div>
-                <p class="card-desc" title="Advertencia sobre el borrado de datos">Al eliminar tu cuenta, se borrará
-                    permanentemente de la base de datos.</p>
-
-                <button class="btn btn-danger" onclick="confirmDeleteAccount()"
-                    title="Haz clic para solicitar la eliminación permanente de tu usuario" id="btn-delete">
-                    <i class="fa-solid fa-trash-can"></i> Eliminar mi Cuenta
-                </button>
-
-                <small class="card-desc-bottom" title="Advertencia sobre el borrado de datos">Esta acción no se puede
-                    deshacer.</small>
-
-                <div id="delete-feedback" class="feedback-msg" title="Área donde aparecen las alertas de eliminación">
-                </div>
-            </div>
-
-        </section>
+        <!-- TARJETA: CERRAR SESIÓN -->
+        <div class="card gsap-fade" style="animation-delay: 0.3s">
+          <div class="card-header">
+            <i class="fa-solid fa-power-off"></i> Cerrar Sesión
+          </div>
+          <p class="card-desc">
+            Cierra tu sesión de forma segura. Tendrás que volver a ingresar tu
+            correo y contraseña para acceder.
+          </p>
+          <button
+            class="btn"
+            onclick="logout()"
+            style="
+              background: transparent;
+              color: var(--text-main);
+              border: 2px solid var(--text-main);
+            "
+          >
+            <i class="fa-solid fa-right-from-bracket"></i> Salir de la Cuenta
+          </button>
+        </div>
+      </section>
+      <!-- TARJETA: ZONA PELIGROSA -->
+      <div
+        class="card danger full-width gsap-fade"
+        style="animation-delay: 0.4s"
+      >
+        <div class="card-header" style="color: var(--error-color)">
+          <i class="fa-solid fa-triangle-exclamation"></i> Zona Peligrosa
+        </div>
+        <p class="card-desc">
+          Al eliminar tu cuenta, se borrará permanentemente de la base de datos.
+        </p>
+        <button
+          class="btn btn-danger"
+          onclick="confirmDeleteAccount()"
+          id="btn-delete"
+        >
+          <i class="fa-solid fa-trash-can"></i> Eliminar mi Cuenta
+        </button>
+        <small class="card-desc-bottom"
+          >Esta acción no se puede deshacer.</small
+        >
+        <div id="delete-feedback" class="feedback-msg"></div>
+      </div>
     </div>
 
     <footer>
-        <div class="container">
-            <div class="footerContent">
-                <p>© 2026 GM. Todos los derechos reservados.</p>
-                <p>
-                    <a href="">Contacto</a>
-                    <a href="">Sugerencias</a>
-                    <a href="">Política de Privacidad</a>
-                    <a href="">Términos de Uso</a>
-                </p>
-            </div>
+      <div class="container">
+        <div class="footerContent">
+          <p>© 2026 GM. Todos los derechos reservados.</p>
+          <p>
+            <a href="">Contacto</a>
+            <a href="">Sugerencias</a>
+            <a href="">Política de Privacidad</a>
+            <a href="">Términos de Uso</a>
+          </p>
         </div>
+      </div>
     </footer>
 
-    <!-- Integración Firebase Auth y RTDB -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, updatePassword, updateEmail, deleteUser } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-        import { getDatabase, ref, update, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+        updatePassword,
+        updateEmail,
+        deleteUser,
+      } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        update,
+        remove,
+        onValue,
+      } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyC-03EXQWiqdFsRG0zWaF0Y-5goSyjZsXg",
-            authDomain: "gastos-generales.firebaseapp.com",
-            databaseURL: "https://gastos-generales-default-rtdb.firebaseio.com",
-            projectId: "gastos-generales",
-            storageBucket: "gastos-generales.firebasestorage.app",
-            messagingSenderId: "154259308690",
-            appId: "1:154259308690:web:9924d809ba3d9f0b27664b"
-        };
+      const firebaseConfig = {
+        apiKey: "AIzaSyC-03EXQWiqdFsRG0zWaF0Y-5goSyjZsXg",
+        authDomain: "gastos-generales.firebaseapp.com",
+        databaseURL: "https://gastos-generales-default-rtdb.firebaseio.com",
+        projectId: "gastos-generales",
+        storageBucket: "gastos-generales.firebasestorage.app",
+        messagingSenderId: "154259308690",
+        appId: "1:154259308690:web:9924d809ba3d9f0b27664b",
+      };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
-        let currentUser = null;
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getDatabase(app);
+      let currentUser = null;
 
-        // === PROTECCIÓN DE RUTA Y SESIÓN ===
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = '/auth/';
-            } else {
-                currentUser = user;
-                const emailDisplay = document.getElementById('current-email-display');
-                if (emailDisplay) emailDisplay.innerText = user.email;
-            }
-        });
+      // === AUTH GUARD ===
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          window.location.href = "/auth/";
+        } else {
+          currentUser = user;
+          document.getElementById("current-email-display").innerText =
+            user.email;
 
-        // === FUNCIÓN AUXILIAR: ACTUALIZAR RTDB ===
-        async function syncToRTDB(dataToUpdate) {
-            if (!currentUser) return;
-            try {
-                // Actualiza los nodos en RTDB. Si no existen, los crea automáticamente.
-                await update(ref(db, 'usuarios/' + currentUser.uid), dataToUpdate);
-            } catch (error) {
-                console.error("Error al sincronizar con la base de datos:", error);
-            }
+          // Cargar presupuesto guardado
+          const budgetRef = ref(db, `usuarios/${user.uid}/budget`);
+          onValue(
+            budgetRef,
+            (snapshot) => {
+              const data = snapshot.val();
+              if (data && data.amount !== undefined) {
+                // Format with thousand separators
+                const formatted = parseFloat(data.amount).toLocaleString(
+                  "en-US",
+                  {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  },
+                );
+                document.getElementById("budget-amount").value = formatted;
+                document.getElementById("budget-currency").value =
+                  data.currency || "ARS";
+              }
+            },
+            { onlyOnce: true },
+          );
         }
+      });
 
-        // === LOGOUT ===
-        window.logout = function () {
-            signOut(auth).then(() => {
-                window.location.href = '/auth/';
-            });
-        };
+      // === FORMATO DEL INPUT DE PRESUPUESTO ===
+      window.formatBudgetInput = function (el) {
+        let raw = el.value.replace(/[^0-9.]/g, "");
+        const parts = raw.split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        if (parts.length > 2) parts.pop();
+        el.value = parts.join(".");
+      };
 
-        // === LÓGICA DE TEMAS (DARK/LIGHT MODE) ===
-        window.setTheme = function (theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('gestor_theme', theme);
-            updateThemeButtons(theme);
+      // === GUARDAR PRESUPUESTO ===
+      window.saveBudget = async function () {
+        if (!currentUser) return;
 
-            // Sincronizar en la base de datos
-            syncToRTDB({ theme: theme });
-        };
+        const rawVal = document
+          .getElementById("budget-amount")
+          .value.replace(/,/g, "");
+        const amount = parseFloat(rawVal) || 0;
+        const currency = document.getElementById("budget-currency").value;
+        const feedback = document.getElementById("budget-feedback");
+        const btn = document.getElementById("btn-save-budget");
 
-        function updateThemeButtons(theme) {
-            document.getElementById('btn-light').classList.remove('active');
-            document.getElementById('btn-dark').classList.remove('active');
-            if (theme === 'dark') {
-                document.getElementById('btn-dark').classList.add('active');
-            } else {
-                document.getElementById('btn-light').classList.add('active');
-            }
+        btn.disabled = true;
+        btn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+        try {
+          await update(ref(db, `usuarios/${currentUser.uid}/budget`), {
+            amount,
+            currency,
+          });
+          feedback.innerText = "¡Presupuesto guardado correctamente!";
+          feedback.className = "feedback-msg success";
+        } catch (err) {
+          feedback.innerText = "Error al guardar el presupuesto.";
+          feedback.className = "feedback-msg error";
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML =
+            '<i class="fa-solid fa-floppy-disk"></i> Guardar Presupuesto';
+          setTimeout(() => {
+            feedback.className = "feedback-msg";
+          }, 3000);
         }
+      };
 
-        // Inicializar botones de tema según preferencia guardada
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        updateThemeButtons(currentTheme);
+      // === SYNC HELPER ===
+      async function syncToRTDB(dataToUpdate) {
+        if (!currentUser) return;
+        try {
+          await update(ref(db, "usuarios/" + currentUser.uid), dataToUpdate);
+        } catch (error) {
+          console.error("Error al sincronizar:", error);
+        }
+      }
 
-        // === LÓGICA CAMBIAR CORREO ===
-        document.getElementById('email-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const newEmail = document.getElementById('new-email').value;
-            const feedback = document.getElementById('email-feedback');
-            const btn = document.getElementById('btn-change-email');
-
-            if (!currentUser) return;
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
-
-            updateEmail(currentUser, newEmail).then(() => {
-                // Actualizar en RTDB
-                syncToRTDB({ email: newEmail });
-
-                feedback.innerText = "¡Correo electrónico actualizado con éxito!";
-                feedback.className = "feedback-msg success";
-                document.getElementById('current-email-display').innerText = newEmail;
-                document.getElementById('email-form').reset();
-            }).catch((error) => {
-                feedback.className = "feedback-msg error";
-                if (error.code === 'auth/requires-recent-login') {
-                    feedback.innerText = "Por seguridad, debes cerrar sesión y volver a ingresar antes de cambiar tu correo.";
-                } else if (error.code === 'auth/email-already-in-use') {
-                    feedback.innerText = "Esta dirección de correo ya está registrada en otra cuenta.";
-                } else {
-                    feedback.innerText = "Ocurrió un error al intentar actualizar el correo.";
-                }
-            }).finally(() => {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-envelope-circle-check"></i> Actualizar Correo';
-            });
+      // === LOGOUT ===
+      window.logout = function () {
+        signOut(auth).then(() => {
+          window.location.href = "/auth/";
         });
+      };
 
-        // === LÓGICA CAMBIAR CONTRASEÑA ===
-        document.getElementById('password-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const newPassword = document.getElementById('new-password').value;
-            const feedback = document.getElementById('pwd-feedback');
-            const btn = document.getElementById('btn-change-pwd');
+      // === TEMA ===
+      window.setTheme = function (theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("gestor_theme", theme);
+        updateThemeButtons(theme);
+        syncToRTDB({ theme });
+      };
 
-            if (!currentUser) return;
+      function updateThemeButtons(theme) {
+        document.getElementById("btn-light").classList.remove("active");
+        document.getElementById("btn-dark").classList.remove("active");
+        document
+          .getElementById(theme === "dark" ? "btn-dark" : "btn-light")
+          .classList.add("active");
+      }
 
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
+      updateThemeButtons(document.documentElement.getAttribute("data-theme"));
 
-            updatePassword(currentUser, newPassword).then(() => {
-                // Registrar fecha de actualización en la RTDB por seguridad/historial
-                syncToRTDB({ lastPasswordChange: new Date().toISOString() });
+      // === CAMBIAR CORREO ===
+      document.getElementById("email-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const newEmail = document.getElementById("new-email").value;
+        const feedback = document.getElementById("email-feedback");
+        const btn = document.getElementById("btn-change-email");
+        if (!currentUser) return;
 
-                feedback.innerText = "¡Contraseña actualizada con éxito!";
-                feedback.className = "feedback-msg success";
-                document.getElementById('password-form').reset();
-            }).catch((error) => {
-                feedback.className = "feedback-msg error";
-                if (error.code === 'auth/requires-recent-login') {
-                    feedback.innerText = "Por seguridad, debes cerrar sesión y volver a ingresar para cambiar tu clave.";
-                } else {
-                    feedback.innerText = "Error: La contraseña es muy débil o hubo un problema.";
-                }
-            }).finally(() => {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-key"></i> Actualizar Contraseña';
-            });
-        });
+        btn.disabled = true;
+        btn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
 
-        // === LÓGICA ELIMINAR CUENTA (Auth + RTDB) ===
-        window.confirmDeleteAccount = async function () {
-            const feedback = document.getElementById('delete-feedback');
-
-            if (confirm("¿Estás ABSOLUTAMENTE SEGURO de querer eliminar tu cuenta? Todos tus datos se borrarán de la base de datos y perderás el acceso.")) {
-
-                const btn = document.getElementById('btn-delete');
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
-
-                try {
-                    // 1. Primero borramos los datos del usuario en la RTDB
-                    await remove(ref(db, 'usuarios/' + currentUser.uid));
-
-                    // 2. Luego eliminamos el usuario de Auth
-                    await deleteUser(currentUser);
-
-                    // (Redirigirá automáticamente por el onAuthStateChanged al detectar sesión nula)
-                } catch (error) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Eliminar mi Cuenta';
-                    feedback.className = "feedback-msg error";
-
-                    if (error.code === 'auth/requires-recent-login') {
-                        feedback.innerText = "ACCESO DENEGADO: Por tu seguridad, debes cerrar sesión e ingresar nuevamente con tu correo y contraseña justo antes de eliminar la cuenta.";
-                    } else {
-                        feedback.innerText = "Ocurrió un error al intentar eliminar la cuenta.";
-                    }
-                }
+        updateEmail(currentUser, newEmail)
+          .then(() => {
+            syncToRTDB({ email: newEmail });
+            feedback.innerText = "¡Correo actualizado con éxito!";
+            feedback.className = "feedback-msg success";
+            document.getElementById("current-email-display").innerText =
+              newEmail;
+            document.getElementById("email-form").reset();
+          })
+          .catch((error) => {
+            feedback.className = "feedback-msg error";
+            if (error.code === "auth/requires-recent-login") {
+              feedback.innerText =
+                "Por seguridad, cerrá sesión y volvé a ingresar antes de cambiar el correo.";
+            } else if (error.code === "auth/email-already-in-use") {
+              feedback.innerText =
+                "Esta dirección ya está registrada en otra cuenta.";
+            } else {
+              feedback.innerText =
+                "Ocurrió un error al intentar actualizar el correo.";
             }
-        };
+          })
+          .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML =
+              '<i class="fa-solid fa-envelope-circle-check"></i> Actualizar Correo';
+          });
+      });
 
-        // Animación de entrada general
-        document.addEventListener('DOMContentLoaded', () => {
-            gsap.fromTo(".gsap-fade",
-                { opacity: 0, y: 20 },
-                { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power2.out" }
-            );
+      // === CAMBIAR CONTRASEÑA ===
+      document
+        .getElementById("password-form")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+          const newPassword = document.getElementById("new-password").value;
+          const feedback = document.getElementById("pwd-feedback");
+          const btn = document.getElementById("btn-change-pwd");
+          if (!currentUser) return;
+
+          btn.disabled = true;
+          btn.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
+
+          updatePassword(currentUser, newPassword)
+            .then(() => {
+              syncToRTDB({ lastPasswordChange: new Date().toISOString() });
+              feedback.innerText = "¡Contraseña actualizada con éxito!";
+              feedback.className = "feedback-msg success";
+              document.getElementById("password-form").reset();
+            })
+            .catch((error) => {
+              feedback.className = "feedback-msg error";
+              if (error.code === "auth/requires-recent-login") {
+                feedback.innerText =
+                  "Por seguridad, cerrá sesión e ingresá nuevamente para cambiar tu clave.";
+              } else {
+                feedback.innerText =
+                  "Error: La contraseña es muy débil o hubo un problema.";
+              }
+            })
+            .finally(() => {
+              btn.disabled = false;
+              btn.innerHTML =
+                '<i class="fa-solid fa-key"></i> Actualizar Contraseña';
+            });
         });
 
+      // === ELIMINAR CUENTA ===
+      window.confirmDeleteAccount = async function () {
+        const feedback = document.getElementById("delete-feedback");
+        if (
+          confirm(
+            "¿Estás ABSOLUTAMENTE SEGURO de querer eliminar tu cuenta? Todos tus datos se borrarán permanentemente.",
+          )
+        ) {
+          const btn = document.getElementById("btn-delete");
+          btn.disabled = true;
+          btn.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+          try {
+            await remove(ref(db, "usuarios/" + currentUser.uid));
+            await deleteUser(currentUser);
+          } catch (error) {
+            btn.disabled = false;
+            btn.innerHTML =
+              '<i class="fa-solid fa-trash-can"></i> Eliminar mi Cuenta';
+            feedback.className = "feedback-msg error";
+            if (error.code === "auth/requires-recent-login") {
+              feedback.innerText =
+                "ACCESO DENEGADO: Cerrá sesión e ingresá nuevamente antes de eliminar la cuenta.";
+            } else {
+              feedback.innerText =
+                "Ocurrió un error al intentar eliminar la cuenta.";
+            }
+          }
+        }
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        gsap.fromTo(
+          ".gsap-fade",
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power2.out" },
+        );
+      });
     </script>
-</body>
-
+  </body>
 </html>
