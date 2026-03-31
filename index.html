@@ -1414,38 +1414,48 @@
         padding: 2rem;
       }
 
-      .db-chart-inner {
-        display: flex;
-        align-items: center;
-        gap: 2rem;
-        flex-wrap: wrap;
-      }
-
-      #db-donut-chart {
-        flex-shrink: 0;
-      }
-
-      .db-chart-legend {
+      .db-bar-chart {
         display: flex;
         flex-direction: column;
-        gap: 0.6rem;
-        flex: 1;
+        gap: 1rem;
       }
 
-      .db-legend-item {
-        display: flex;
+      .db-bar-row {
+        display: grid;
+        grid-template-columns: 110px 1fr 100px;
+        gap: 0.75rem;
         align-items: center;
-        gap: 0.6rem;
-        font-size: 0.78rem;
-        font-weight: 600;
+      }
+
+      .db-bar-label {
+        font-size: 0.72rem;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      .db-legend-dot {
-        width: 10px;
-        height: 10px;
-        flex-shrink: 0;
+      .db-bar-track {
+        height: 16px;
+        background: var(--bg-color);
+        border: 1px solid var(--border-light);
+        overflow: hidden;
+      }
+
+      .db-bar-fill {
+        height: 100%;
+        transition: width 0.6s ease;
+      }
+
+      .db-bar-value {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-align: right;
+        white-space: nowrap;
+        color: var(--text-main);
       }
 
       .db-top-list {
@@ -1663,16 +1673,25 @@
         <!-- Summary cards -->
         <section class="dashboard gsap-fade" style="animation-delay: 0.1s">
           <div class="card">
-            <div class="card-title">Gastos Fijos (ARS)</div>
+            <div class="card-title">Total del Mes (ARS)</div>
             <div class="card-value">ARS <span id="db-total-ars">0</span></div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">
+              Fijos: ARS <span id="db-fixed-ars">0</span> &nbsp;·&nbsp; Extras: ARS <span id="db-extras-ars-sub">0</span>
+            </div>
           </div>
           <div class="card">
-            <div class="card-title">Gastos Fijos (USD)</div>
+            <div class="card-title">Total del Mes (USD)</div>
             <div class="card-value">USD <span id="db-total-usd">0</span></div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">
+              Fijos: USD <span id="db-fixed-usd">0</span> &nbsp;·&nbsp; Extras: USD <span id="db-extras-usd-sub">0</span>
+            </div>
           </div>
           <div class="card">
-            <div class="card-title">Suscripciones Activas</div>
-            <div class="card-value" id="db-total-items">0</div>
+            <div class="card-title">Extras del Mes</div>
+            <div class="card-value">ARS <span id="db-extras-ars">0</span></div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">
+              ≈ USD <span id="db-extras-usd">0</span>
+            </div>
           </div>
           <div class="card">
             <div class="card-title">Tipo de Cambio</div>
@@ -1691,13 +1710,10 @@
 
         <!-- Chart + Top subscriptions -->
         <section class="db-main-grid gsap-fade" style="animation-delay: 0.2s">
-          <!-- Donut chart -->
+          <!-- Bar chart -->
           <div class="db-chart-panel">
-            <div class="db-section-title">Gastos por Categoría</div>
-            <div class="db-chart-inner">
-              <canvas id="db-donut-chart" width="180" height="180"></canvas>
-              <div id="db-chart-legend" class="db-chart-legend"></div>
-            </div>
+            <div class="db-section-title">Gastos Fijos por Categoría</div>
+            <div id="db-bar-chart" class="db-bar-chart"></div>
           </div>
 
           <!-- Top subscriptions -->
@@ -2868,6 +2884,8 @@
               '<i class="fa-solid fa-circle-check"></i> Disponible';
             remainingCard.classList.toggle("negative", isNeg);
           }
+
+          updateDashboardTab();
         }
 
         function animateOnLoad() {
@@ -3105,32 +3123,51 @@
           // Only update if dashboard panel exists
           if (!document.getElementById("db-total-ars")) return;
 
-          // Compute totals
-          let totalARS = 0, totalUSD = 0, activeItems = 0;
+          // Fixed (subscriptions)
+          let fixedARS = 0, fixedUSD = 0;
           subscriptions.forEach((item) => {
             const done = item.isInstallment && item.paidInstallments >= item.totalInstallments;
             if (!done) {
-              activeItems++;
               if (item.currency === "USD") {
-                totalARS += item.amount * EXCHANGE_RATE_VENTA;
-                totalUSD += item.amount;
+                fixedARS += item.amount * EXCHANGE_RATE_VENTA;
+                fixedUSD += item.amount;
               } else {
-                totalARS += item.amount;
-                totalUSD += item.amount / EXCHANGE_RATE_COMPRA;
+                fixedARS += item.amount;
+                fixedUSD += item.amount / EXCHANGE_RATE_COMPRA;
               }
             }
           });
 
+          // Extras (one-time expenses)
+          let extrasARS = 0, extrasUSD = 0;
+          oneTimeExpenses.forEach((item) => {
+            if (item.currency === "USD") {
+              extrasARS += item.amount * EXCHANGE_RATE_VENTA;
+              extrasUSD += item.amount;
+            } else {
+              extrasARS += item.amount;
+              extrasUSD += item.amount / EXCHANGE_RATE_COMPRA;
+            }
+          });
+
+          const totalARS = fixedARS + extrasARS;
+          const totalUSD = fixedUSD + extrasUSD;
+
           document.getElementById("db-total-ars").textContent = formatMoney(totalARS);
           document.getElementById("db-total-usd").textContent = formatMoney(totalUSD);
-          document.getElementById("db-total-items").textContent = activeItems;
+          document.getElementById("db-fixed-ars").textContent = formatMoney(fixedARS);
+          document.getElementById("db-fixed-usd").textContent = formatMoney(fixedUSD);
+          document.getElementById("db-extras-ars-sub").textContent = formatMoney(extrasARS);
+          document.getElementById("db-extras-usd-sub").textContent = formatMoney(extrasUSD);
+          document.getElementById("db-extras-ars").textContent = formatMoney(extrasARS);
+          document.getElementById("db-extras-usd").textContent = formatMoney(extrasUSD);
           document.getElementById("db-rate-compra").textContent = formatMoney(EXCHANGE_RATE_COMPRA);
           document.getElementById("db-rate-venta").textContent = formatMoney(EXCHANGE_RATE_VENTA);
 
-          // Budget cards
+          // Budget cards (total including extras)
           dbUpdateBudgetCards(totalARS, totalUSD);
 
-          // Category totals for chart
+          // Category totals for bar chart (subscriptions only)
           const catTotals = {};
           subscriptions.forEach((item) => {
             const done = item.isInstallment && item.paidInstallments >= item.totalInstallments;
@@ -3139,7 +3176,7 @@
               catTotals[item.category] = (catTotals[item.category] || 0) + arsVal;
             }
           });
-          dbDrawDonut(catTotals);
+          dbDrawBarChart(catTotals);
 
           // Top 5 subscriptions by ARS value
           const active = subscriptions.filter((item) =>
@@ -3189,81 +3226,40 @@
           usdEl.textContent = (remUSD < 0 ? "− " : "") + "USD " + formatMoney(Math.abs(remUSD));
         }
 
-        function dbDrawDonut(catTotals) {
-          const canvas = document.getElementById("db-donut-chart");
-          if (!canvas) return;
-          const ctx = canvas.getContext("2d");
-          const legend = document.getElementById("db-chart-legend");
-          const W = 180, CX = W / 2, CY = W / 2;
-          const outerR = 75, innerR = 42;
-
-          ctx.clearRect(0, 0, W, W);
-          legend.innerHTML = "";
+        function dbDrawBarChart(catTotals) {
+          const container = document.getElementById("db-bar-chart");
+          if (!container) return;
+          container.innerHTML = "";
 
           const total = Object.values(catTotals).reduce((s, v) => s + v, 0);
 
-          const style = getComputedStyle(document.documentElement);
-          const surfaceColor = style.getPropertyValue("--surface-color").trim() || "#ffffff";
-          const mutedColor = style.getPropertyValue("--text-muted").trim() || "#666666";
-          const mainColor = style.getPropertyValue("--text-main").trim() || "#000000";
-          const borderColor = style.getPropertyValue("--border-color").trim() || "#cccccc";
-
           if (total === 0) {
-            ctx.beginPath();
-            ctx.arc(CX, CY, outerR, 0, Math.PI * 2);
-            ctx.strokeStyle = borderColor;
-            ctx.lineWidth = outerR - innerR;
-            ctx.stroke();
-
-            ctx.fillStyle = mutedColor;
-            ctx.font = "600 10px Montserrat, sans-serif";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText("SIN DATOS", CX, CY);
+            container.innerHTML = `<div style="padding:2rem 0;text-align:center;color:var(--text-muted);font-size:0.82rem;font-weight:600;text-transform:uppercase;">Sin datos</div>`;
             return;
           }
 
           const entries = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
-          let startAngle = -Math.PI / 2;
+          const maxVal = entries[0][1];
 
           entries.forEach(([cat, val]) => {
-            const slice = (val / total) * Math.PI * 2;
+            const pct = (val / maxVal) * 100;
             const color = dbGetColor(cat);
+            const formatted = val >= 1000000
+              ? "ARS " + (val / 1000000).toFixed(1) + "M"
+              : val >= 1000
+              ? "ARS " + Math.round(val / 1000) + "K"
+              : "ARS " + Math.round(val);
 
-            // Draw arc as thick stroke (donut effect)
-            ctx.beginPath();
-            ctx.arc(CX, CY, (outerR + innerR) / 2, startAngle, startAngle + slice);
-            ctx.strokeStyle = color;
-            ctx.lineWidth = outerR - innerR;
-            ctx.lineCap = "butt";
-            ctx.stroke();
-
-            startAngle += slice;
-
-            const pct = Math.round((val / total) * 100);
-            const li = document.createElement("div");
-            li.className = "db-legend-item";
-            li.innerHTML = `
-              <div class="db-legend-dot" style="background:${color}"></div>
-              <span>${cat} <span style="color:var(--text-muted);font-weight:400">${pct}%</span></span>
-            `;
-            legend.appendChild(li);
+            const row = document.createElement("div");
+            row.className = "db-bar-row";
+            row.innerHTML = `
+              <div class="db-bar-label">${cat}</div>
+              <div class="db-bar-track">
+                <div class="db-bar-fill" style="width:${pct}%;background:${color}"></div>
+              </div>
+              <div class="db-bar-value">${formatted}</div>`;
+            container.appendChild(row);
           });
-
-          // Center label
-          ctx.fillStyle = mutedColor;
-          ctx.font = "700 9px Montserrat, sans-serif";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText("TOTAL ARS", CX, CY - 8);
-          ctx.fillStyle = mainColor;
-          ctx.font = "800 11px Montserrat, sans-serif";
-          const label = total >= 1000000
-            ? (total / 1000000).toFixed(1) + "M"
-            : total >= 1000
-            ? Math.round(total / 1000) + "K"
-            : Math.round(total).toString();
-          ctx.fillText(label, CX, CY + 8);
         }
 
         function dbRenderTopList(items) {
