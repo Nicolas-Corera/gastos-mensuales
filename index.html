@@ -571,7 +571,7 @@
         color: var(--text-muted);
       }
 
-      .btn-delete {
+      .btn-menu {
         background: transparent;
         color: var(--text-main);
         border: 1px solid var(--border-color);
@@ -584,7 +584,112 @@
         transition: all 0.2s;
       }
 
-      .btn-delete:hover {
+      .btn-menu:hover {
+        background: var(--text-main);
+        color: var(--surface-color);
+      }
+
+      .item-actions {
+        position: relative;
+      }
+
+      .item-dropdown {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 4px);
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        z-index: 100;
+        min-width: 150px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        display: none;
+      }
+
+      .item-dropdown.open {
+        display: block;
+      }
+
+      .item-dropdown button {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-main);
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        text-align: left;
+        letter-spacing: 0.05em;
+      }
+
+      .item-dropdown button:last-child {
+        border-bottom: none;
+      }
+
+      .item-dropdown button:hover {
+        background: var(--card-bg);
+      }
+
+      .item-dropdown button.btn-dd-delete:hover {
+        background: #c0392b;
+        color: #fff;
+      }
+
+      /* Edit Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-box {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        padding: 2rem;
+        width: 100%;
+        max-width: 480px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-header h3 {
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+      }
+
+      .modal-close {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .modal-close:hover {
         background: var(--text-main);
         color: var(--surface-color);
       }
@@ -2488,6 +2593,122 @@
           saveDataToFirebase();
         };
 
+        window.toggleItemMenu = function (id) {
+          document.querySelectorAll(".item-dropdown").forEach((el) => {
+            if (el.id !== `menu-${id}`) el.classList.remove("open");
+          });
+          const menu = document.getElementById(`menu-${id}`);
+          if (menu) menu.classList.toggle("open");
+        };
+
+        window.editSubscription = function (id) {
+          const item = subscriptions.find((s) => s.id === id);
+          if (!item) return;
+          // Close any open dropdown
+          document.querySelectorAll(".item-dropdown").forEach((el) => el.classList.remove("open"));
+
+          document.getElementById("edit-id").value = item.id;
+          document.getElementById("edit-name").value = item.name;
+
+          const standardCategories = ["Streaming", "Software", "Servicios", "Educacion", "Salud", "Otros"];
+          if (standardCategories.includes(item.category)) {
+            document.getElementById("edit-category").value = item.category;
+            document.getElementById("edit-custom-category-group").classList.add("hidden");
+            document.getElementById("edit-custom-category").removeAttribute("required");
+            document.getElementById("edit-custom-category").value = "";
+          } else {
+            document.getElementById("edit-category").value = "Otros";
+            document.getElementById("edit-custom-category-group").classList.remove("hidden");
+            document.getElementById("edit-custom-category").value = item.category;
+            document.getElementById("edit-custom-category").setAttribute("required", "true");
+          }
+
+          document.getElementById("edit-payment-method").value = item.paymentMethod || "";
+          document.getElementById("edit-amount").value = item.amount;
+          document.getElementById("edit-currency").value = item.currency;
+          document.getElementById("edit-is-installment").checked = !!item.isInstallment;
+
+          if (item.isInstallment) {
+            document.getElementById("edit-installments-group").classList.remove("hidden");
+            document.getElementById("edit-total-installments").value = item.totalInstallments || 0;
+            document.getElementById("edit-paid-installments").value = item.paidInstallments || 0;
+          } else {
+            document.getElementById("edit-installments-group").classList.add("hidden");
+          }
+
+          document.getElementById("edit-modal").classList.remove("hidden");
+        };
+
+        window.closeEditModal = function () {
+          document.getElementById("edit-modal").classList.add("hidden");
+        };
+
+        // Close dropdowns when clicking outside
+        document.addEventListener("click", function (e) {
+          if (!e.target.closest(".item-actions")) {
+            document.querySelectorAll(".item-dropdown").forEach((el) => el.classList.remove("open"));
+          }
+        });
+
+        // Edit modal event listeners
+        document.getElementById("edit-modal").addEventListener("click", function (e) {
+          if (e.target === this) closeEditModal();
+        });
+
+        document.getElementById("edit-category").addEventListener("change", function () {
+          const customGroup = document.getElementById("edit-custom-category-group");
+          const customInput = document.getElementById("edit-custom-category");
+          if (this.value === "Otros") {
+            customGroup.classList.remove("hidden");
+            customInput.setAttribute("required", "true");
+          } else {
+            customGroup.classList.add("hidden");
+            customInput.removeAttribute("required");
+            customInput.value = "";
+          }
+        });
+
+        document.getElementById("edit-is-installment").addEventListener("change", function () {
+          const group = document.getElementById("edit-installments-group");
+          this.checked ? group.classList.remove("hidden") : group.classList.add("hidden");
+        });
+
+        document.getElementById("edit-form").addEventListener("submit", function (e) {
+          e.preventDefault();
+          const id = document.getElementById("edit-id").value;
+          const name = document.getElementById("edit-name").value;
+          const categorySelect = document.getElementById("edit-category").value;
+          const customCategory = document.getElementById("edit-custom-category").value;
+          const category = categorySelect === "Otros" ? customCategory : categorySelect;
+          const paymentMethod = document.getElementById("edit-payment-method").value;
+          const amountRaw = document.getElementById("edit-amount").value.replace(/,/g, "");
+          const amount = parseFloat(amountRaw);
+          const currency = document.getElementById("edit-currency").value;
+          const isInstallment = document.getElementById("edit-is-installment").checked;
+          const totalInstallments = parseInt(document.getElementById("edit-total-installments").value) || 0;
+          const paidInstallments = parseInt(document.getElementById("edit-paid-installments").value) || 0;
+
+          const idx = subscriptions.findIndex((s) => s.id === id);
+          if (idx !== -1) {
+            subscriptions[idx] = {
+              ...subscriptions[idx],
+              name,
+              category,
+              paymentMethod,
+              amount,
+              currency,
+              isInstallment,
+              totalInstallments: isInstallment ? totalInstallments : 0,
+              paidInstallments: isInstallment ? paidInstallments : 0,
+            };
+            renderList();
+            updateDashboard();
+            saveDataToFirebase();
+          }
+
+          closeEditModal();
+        });
+
         // === MAIN FUNCTIONS ===
 
         function handleAddSubscription(e) {
@@ -2606,10 +2827,18 @@
                         </div>
                         <div class="item-price">${originalText}</div>
                         <div class="item-converted">${convertedText}</div>
-                        <div>
-                            <button class="btn-delete" onclick="deleteSubscription('${item.id}')">
-                                <i class="fa-solid fa-xmark"></i>
+                        <div class="item-actions">
+                            <button class="btn-menu" onclick="toggleItemMenu('${item.id}')">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
                             </button>
+                            <div class="item-dropdown" id="menu-${item.id}">
+                                <button onclick="editSubscription('${item.id}')">
+                                    <i class="fa-solid fa-pen"></i> Editar
+                                </button>
+                                <button class="btn-dd-delete" onclick="deleteSubscription('${item.id}')">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>
+                            </div>
                         </div>`;
 
             listBody.appendChild(row);
@@ -3615,5 +3844,71 @@
         }
       }
     </script>
+
+    <!-- Edit Subscription Modal -->
+    <div id="edit-modal" class="modal-overlay hidden">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-pen" style="margin-right:0.5rem"></i>Editar Suscripción</h3>
+          <button class="modal-close" onclick="closeEditModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="edit-form">
+          <input type="hidden" id="edit-id" />
+          <div class="form-group">
+            <label for="edit-name">Nombre del Servicio</label>
+            <input type="text" id="edit-name" class="form-control" placeholder="Ej. Netflix, Gimnasio..." required />
+          </div>
+          <div class="form-group">
+            <label for="edit-category">Categoría</label>
+            <select id="edit-category" class="form-control" required>
+              <option value="Streaming">Streaming &amp; Media</option>
+              <option value="Software">Software &amp; Herramientas</option>
+              <option value="Servicios">Servicios Básicos</option>
+              <option value="Educacion">Educación</option>
+              <option value="Salud">Salud &amp; Bienestar</option>
+              <option value="Otros">Otros</option>
+            </select>
+          </div>
+          <div class="form-group hidden" id="edit-custom-category-group">
+            <label for="edit-custom-category">Especificar Categoría</label>
+            <input type="text" id="edit-custom-category" class="form-control" placeholder="Ej. Comida, Transporte..." />
+          </div>
+          <div class="form-group">
+            <label for="edit-payment-method">Método de Pago / Tarjeta</label>
+            <input type="text" id="edit-payment-method" class="form-control" placeholder="Ej. Visa Santander, Efectivo..." required />
+          </div>
+          <div class="form-group row-group">
+            <div>
+              <label for="edit-amount">Monto Mensual / Cuota</label>
+              <input type="text" id="edit-amount" class="form-control" placeholder="0.00" required />
+            </div>
+            <div>
+              <label for="edit-currency">Moneda</label>
+              <select id="edit-currency" class="form-control">
+                <option value="ARS">ARS</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>
+          </div>
+          <label class="checkbox-group">
+            <input type="checkbox" id="edit-is-installment" />
+            Es un pago en cuotas
+          </label>
+          <div class="form-group row-group hidden" id="edit-installments-group">
+            <div>
+              <label for="edit-total-installments">Total Cuotas</label>
+              <input type="number" id="edit-total-installments" class="form-control" min="2" value="12" />
+            </div>
+            <div>
+              <label for="edit-paid-installments">Cuotas Pagadas</label>
+              <input type="number" id="edit-paid-installments" class="form-control" min="0" value="0" />
+            </div>
+          </div>
+          <button type="submit" class="btn">
+            <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+          </button>
+        </form>
+      </div>
+    </div>
   </body>
 </html>
