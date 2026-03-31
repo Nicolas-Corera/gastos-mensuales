@@ -676,6 +676,66 @@
         color: #fff;
       }
 
+      .projection-section {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .projection-header {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .projection-body {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .projection-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+
+      .projection-label {
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .projection-value {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+
+      .projection-value.saving {
+        color: var(--positive-color, #22c55e);
+      }
+
+      .projection-value.increase {
+        color: var(--negative-color, #ef4444);
+      }
+
+      .projection-divider {
+        width: 1px;
+        height: 2rem;
+        background: var(--border-color);
+      }
+
       footer {
         border-top: 3px solid var(--border-light);
       }
@@ -1849,6 +1909,31 @@
         </div>
       </section>
 
+      <!-- PROYECCIÓN MES SIGUIENTE -->
+      <section class="projection-section gsap-fade" style="animation-delay: 0.4s">
+        <div class="projection-header">
+          <i class="fa-solid fa-calendar-days"></i>
+          Proyección Mes Siguiente
+        </div>
+        <div class="projection-body">
+          <div class="projection-item">
+            <span class="projection-label">ARS</span>
+            <span class="projection-value" id="proj-ars">0</span>
+          </div>
+          <div class="projection-divider"></div>
+          <div class="projection-item">
+            <span class="projection-label">USD</span>
+            <span class="projection-value" id="proj-usd">0</span>
+          </div>
+          <div class="projection-divider"></div>
+          <div class="projection-item">
+            <span class="projection-label">Diferencia ARS</span>
+            <span class="projection-value" id="proj-diff">0</span>
+          </div>
+        </div>
+        <div id="proj-detail" style="font-size:0.72rem;color:var(--text-muted);margin-top:0.5rem;"></div>
+      </section>
+
       <section class="main-grid">
         <!-- Formulario -->
         <aside class="form-panel gsap-fade" style="animation-delay: 0.4s">
@@ -2576,6 +2661,50 @@
 
           // Update budget cards with fresh totals
           updateBudgetCardsWithTotals(totalARS, totalUSD);
+
+          // Update next-month projection
+          updateProjection(totalARS, totalUSD);
+        }
+
+        function updateProjection(currentARS, currentUSD) {
+          const curMonth = getCurrentMonth();
+          let projARS = 0, projUSD = 0;
+          const droppingOff = [];
+
+          subscriptions.forEach((item) => {
+            // Already excluded this month → also excluded next month, skip
+            if (isSubscriptionExcluded(item)) return;
+            // Completed this month → will drop next month
+            if (item.isInstallment && item.paidInstallments >= item.totalInstallments && item.completedMonth === curMonth) {
+              droppingOff.push(item);
+              return;
+            }
+            // Still active next month
+            if (item.currency === "USD") {
+              projARS += item.amount * EXCHANGE_RATE_VENTA;
+              projUSD += item.amount;
+            } else {
+              projARS += item.amount;
+              projUSD += item.amount / EXCHANGE_RATE_COMPRA;
+            }
+          });
+
+          const diffARS = projARS - currentARS;
+
+          document.getElementById("proj-ars").textContent = formatMoney(projARS);
+          document.getElementById("proj-usd").textContent = formatMoney(projUSD);
+
+          const diffEl = document.getElementById("proj-diff");
+          diffEl.textContent = (diffARS >= 0 ? "+" : "") + formatMoney(diffARS);
+          diffEl.className = "projection-value " + (diffARS < 0 ? "saving" : diffARS > 0 ? "increase" : "");
+
+          const detailEl = document.getElementById("proj-detail");
+          if (droppingOff.length > 0) {
+            const names = droppingOff.map((i) => i.name).join(", ");
+            detailEl.textContent = `Se dan de baja: ${names}`;
+          } else {
+            detailEl.textContent = "Sin cambios previstos respecto al mes actual.";
+          }
         }
 
         // Called when budget changes from Firebase OR when totals change
