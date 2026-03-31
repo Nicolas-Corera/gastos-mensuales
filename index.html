@@ -2666,10 +2666,18 @@
           updateProjection(totalARS, totalUSD);
         }
 
+        function itemAddedMonth(item) {
+          // id is a Date.now() timestamp string
+          const d = new Date(parseInt(item.id));
+          if (isNaN(d.getTime())) return null;
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        }
+
         function updateProjection(currentARS, currentUSD) {
           const curMonth = getCurrentMonth();
           let projARS = 0, projUSD = 0;
           const droppingOff = [];
+          const newThisMonth = [];
 
           subscriptions.forEach((item) => {
             // Already excluded this month → also excluded next month, skip
@@ -2687,6 +2695,10 @@
               projARS += item.amount;
               projUSD += item.amount / EXCHANGE_RATE_COMPRA;
             }
+            // Flag if added this month (will persist into next month)
+            if (itemAddedMonth(item) === curMonth) {
+              newThisMonth.push(item);
+            }
           });
 
           const diffARS = projARS - currentARS;
@@ -2698,13 +2710,14 @@
           diffEl.textContent = (diffARS >= 0 ? "+" : "") + formatMoney(diffARS);
           diffEl.className = "projection-value " + (diffARS < 0 ? "saving" : diffARS > 0 ? "increase" : "");
 
-          const detailEl = document.getElementById("proj-detail");
-          if (droppingOff.length > 0) {
-            const names = droppingOff.map((i) => i.name).join(", ");
-            detailEl.textContent = `Se dan de baja: ${names}`;
-          } else {
-            detailEl.textContent = "Sin cambios previstos respecto al mes actual.";
-          }
+          const parts = [];
+          if (droppingOff.length > 0)
+            parts.push(`🔴 Se dan de baja: ${droppingOff.map((i) => i.name).join(", ")}`);
+          if (newThisMonth.length > 0)
+            parts.push(`🟢 Nuevas este mes: ${newThisMonth.map((i) => i.name).join(", ")}`);
+
+          document.getElementById("proj-detail").textContent =
+            parts.length > 0 ? parts.join("  ·  ") : "Sin cambios previstos respecto al mes actual.";
         }
 
         // Called when budget changes from Firebase OR when totals change
