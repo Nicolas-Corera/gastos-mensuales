@@ -1164,6 +1164,223 @@
           padding: 1.5rem;
         }
       }
+
+      /* === INVERSIONES === */
+      .inv-layout {
+        display: grid;
+        grid-template-columns: 1fr 2.2fr;
+        gap: 2rem;
+        margin-top: 1.5rem;
+      }
+
+      .inv-form-panel {
+        background: var(--surface-color);
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        height: fit-content;
+      }
+
+      .inv-form-panel h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 800;
+      }
+
+      .inv-available-note {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        padding: 0.75rem;
+        background: var(--card-bg);
+        border-left: 3px solid var(--positive-color);
+        line-height: 1.5;
+      }
+
+      .inv-radio-group {
+        display: flex;
+        gap: 1.25rem;
+        margin-top: 0.4rem;
+      }
+
+      .inv-radio-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .inv-warning {
+        font-size: 0.75rem;
+        color: var(--negative-color);
+        margin-top: 0.4rem;
+        display: none;
+      }
+
+      .inv-results-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .inv-empty {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        text-align: center;
+        padding: 5rem 2rem;
+        color: var(--text-muted);
+      }
+
+      .inv-empty i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: block;
+        opacity: 0.4;
+      }
+
+      .inv-empty h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.4rem;
+      }
+
+      .inv-empty p {
+        font-size: 0.82rem;
+      }
+
+      .inv-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+      }
+
+      .inv-card {
+        background: var(--surface-color);
+        padding: 1.75rem;
+        border: 1px solid var(--border-color);
+        position: relative;
+      }
+
+      .inv-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: var(--border-color);
+      }
+
+      .inv-card.is-highlight::before {
+        background-color: var(--positive-color);
+      }
+
+      .inv-card-label {
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+      }
+
+      .inv-card-value {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--positive-color);
+        word-break: break-all;
+      }
+
+      .inv-card-sub {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+        margin-top: 0.3rem;
+      }
+
+      .inv-chart-panel {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        padding: 2rem;
+      }
+
+      .inv-chart-panel h3 {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+      }
+
+      .inv-table {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+      }
+
+      .inv-table-header {
+        display: grid;
+        grid-template-columns: 1fr 1.4fr 1.4fr;
+        padding: 0.9rem 2rem;
+        border-bottom: 2px solid var(--text-main);
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+      }
+
+      .inv-table-body {
+        max-height: 320px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-color) transparent;
+      }
+
+      .inv-table-row {
+        display: grid;
+        grid-template-columns: 1fr 1.4fr 1.4fr;
+        padding: 0.7rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.83rem;
+        transition: background 0.2s;
+      }
+
+      .inv-table-row:hover {
+        background: var(--card-bg);
+      }
+
+      .inv-table-row.is-year {
+        font-weight: 800;
+        background: var(--card-bg);
+        border-bottom: 2px solid var(--border-color);
+      }
+
+      .inv-gain-positive {
+        color: var(--positive-color);
+      }
+
+      @media (max-width: 900px) {
+        .inv-layout {
+          grid-template-columns: 1fr;
+        }
+        .inv-cards {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .inv-table-header,
+        .inv-table-row {
+          padding: 0.7rem 1rem;
+        }
+      }
     </style>
   </head>
 
@@ -1254,6 +1471,9 @@
         </button>
         <button class="tab-btn" id="tab-btn-calculadora" onclick="switchTab('calculadora')">
           <i class="fa-solid fa-calculator"></i> Calculadora
+        </button>
+        <button class="tab-btn" id="tab-btn-inversiones" onclick="switchTab('inversiones')">
+          <i class="fa-solid fa-chart-line"></i> Inversiones
         </button>
       </div>
 
@@ -1509,6 +1729,96 @@
         </div>
 
       </div><!-- /tab-calculadora -->
+
+      <!-- TAB: INVERSIONES -->
+      <div id="tab-inversiones" class="tab-panel">
+
+        <div class="inv-layout">
+
+          <!-- Formulario -->
+          <aside class="inv-form-panel">
+            <h2><i class="fa-solid fa-chart-line"></i> Simular Inversión</h2>
+
+            <div class="inv-available-note" id="inv-available-note">
+              Calculando disponible...
+            </div>
+
+            <form id="inv-form">
+              <div class="form-group">
+                <label for="inv-amount">Monto a invertir</label>
+                <div style="display:flex;gap:0.5rem;">
+                  <input
+                    type="text"
+                    id="inv-amount"
+                    class="form-control"
+                    placeholder="0.00"
+                    required
+                    style="flex:1;"
+                  />
+                  <select id="inv-currency" class="form-control" style="width:auto;">
+                    <option value="ARS">ARS</option>
+                    <option value="USD">USD</option>
+                  </select>
+                </div>
+                <div class="inv-warning" id="inv-amount-warning">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                  El monto supera tu disponible del mes.
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inv-rate">Tasa de ganancia (%)</label>
+                <input
+                  type="text"
+                  id="inv-rate"
+                  class="form-control"
+                  placeholder="Ej: 5.5"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Tipo de tasa</label>
+                <div class="inv-radio-group">
+                  <label class="inv-radio-label">
+                    <input type="radio" name="inv-rate-type" value="annual" checked />
+                    Anual
+                  </label>
+                  <label class="inv-radio-label">
+                    <input type="radio" name="inv-rate-type" value="monthly" />
+                    Mensual
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inv-period">Proyectar por</label>
+                <select id="inv-period" class="form-control">
+                  <option value="12">12 meses</option>
+                  <option value="24">24 meses (2 años)</option>
+                  <option value="36">36 meses (3 años)</option>
+                  <option value="60">60 meses (5 años)</option>
+                  <option value="120">120 meses (10 años)</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn">
+                <i class="fa-solid fa-calculator"></i> Calcular
+              </button>
+            </form>
+          </aside>
+
+          <!-- Resultados -->
+          <div class="inv-results-panel" id="inv-results-panel">
+            <div class="inv-empty">
+              <i class="fa-solid fa-chart-line"></i>
+              <h3>Ingresá los datos para simular</h3>
+              <p>Completá el formulario y hacé clic en Calcular.</p>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /tab-inversiones -->
 
     </div><!-- /container -->
 
@@ -2118,6 +2428,9 @@
           if (tabName === "calculadora") {
             updateCalcSummary();
           }
+          if (tabName === "inversiones") {
+            updateInvAvailable();
+          }
         };
 
         window.deleteOneTimeExpense = function (id) {
@@ -2302,6 +2615,289 @@
               ease: "power3.out",
             },
           );
+        }
+
+        // ============================================================
+        // === INVERSIONES ============================================
+        // ============================================================
+
+        function getCalcRemaining() {
+          if (budgetAmount === 0) return null;
+
+          let budgetARS, budgetUSD;
+          if (budgetCurrency === "ARS") {
+            budgetARS = budgetAmount;
+            budgetUSD = budgetAmount / EXCHANGE_RATE_COMPRA;
+          } else {
+            budgetUSD = budgetAmount;
+            budgetARS = budgetAmount * EXCHANGE_RATE_VENTA;
+          }
+
+          let fixedARS = 0, fixedUSD = 0;
+          subscriptions.forEach((item) => {
+            const isCompleted = item.isInstallment && item.paidInstallments >= item.totalInstallments;
+            if (!isCompleted) {
+              if (item.currency === "USD") {
+                fixedARS += item.amount * EXCHANGE_RATE_VENTA;
+                fixedUSD += item.amount;
+              } else {
+                fixedARS += item.amount;
+                fixedUSD += item.amount / EXCHANGE_RATE_COMPRA;
+              }
+            }
+          });
+
+          let extrasARS = 0, extrasUSD = 0;
+          oneTimeExpenses.forEach((item) => {
+            if (item.currency === "USD") {
+              extrasARS += item.amount * EXCHANGE_RATE_VENTA;
+              extrasUSD += item.amount;
+            } else {
+              extrasARS += item.amount;
+              extrasUSD += item.amount / EXCHANGE_RATE_COMPRA;
+            }
+          });
+
+          return {
+            ars: budgetARS - fixedARS - extrasARS,
+            usd: budgetUSD - fixedUSD - extrasUSD,
+          };
+        }
+
+        function updateInvAvailable() {
+          const rem = getCalcRemaining();
+          const note = document.getElementById("inv-available-note");
+          if (!rem) {
+            note.innerHTML = "Sin presupuesto configurado. Ve a <strong>Calculadora</strong> y agregá un presupuesto.";
+            note.style.borderLeftColor = "var(--text-muted)";
+          } else if (rem.ars <= 0) {
+            note.innerHTML = "No tenés monto disponible este mes (estás en rojo).";
+            note.style.borderLeftColor = "var(--negative-color)";
+          } else {
+            note.innerHTML = `Disponible: <strong>ARS ${formatMoney(rem.ars)}</strong> ≈ <strong>USD ${formatMoney(rem.usd)}</strong>`;
+            note.style.borderLeftColor = "var(--positive-color)";
+          }
+        }
+
+        // Input formatting for inv-amount
+        document.getElementById("inv-amount").addEventListener("input", function () {
+          let val = this.value.replace(/[^0-9.]/g, "");
+          let parts = val.split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          if (parts.length > 2) parts.pop();
+          this.value = parts.join(".");
+
+          // Live warning
+          const amountVal = parseFloat(this.value.replace(/,/g, ""));
+          const currency = document.getElementById("inv-currency").value;
+          checkInvAmountWarning(amountVal, currency);
+        });
+
+        document.getElementById("inv-currency").addEventListener("change", function () {
+          const amountVal = parseFloat(document.getElementById("inv-amount").value.replace(/,/g, ""));
+          checkInvAmountWarning(amountVal, this.value);
+        });
+
+        function checkInvAmountWarning(amount, currency) {
+          const warn = document.getElementById("inv-amount-warning");
+          if (isNaN(amount) || amount <= 0) { warn.style.display = "none"; return; }
+          const rem = getCalcRemaining();
+          if (!rem) { warn.style.display = "none"; return; }
+          const max = currency === "ARS" ? rem.ars : rem.usd;
+          warn.style.display = (amount > max && max > 0) ? "block" : "none";
+        }
+
+        document.getElementById("inv-form").addEventListener("submit", function (e) {
+          e.preventDefault();
+          const amountRaw = document.getElementById("inv-amount").value.replace(/,/g, "");
+          const amount = parseFloat(amountRaw);
+          const currency = document.getElementById("inv-currency").value;
+          const rateRaw = document.getElementById("inv-rate").value.replace(/,/g, "");
+          const rate = parseFloat(rateRaw) / 100;
+          const rateType = document.querySelector('input[name="inv-rate-type"]:checked').value;
+          const months = parseInt(document.getElementById("inv-period").value);
+
+          if (isNaN(amount) || amount <= 0 || isNaN(rate) || rate <= 0) return;
+
+          // Validate max
+          const rem = getCalcRemaining();
+          if (rem) {
+            const max = currency === "ARS" ? rem.ars : rem.usd;
+            if (max > 0 && amount > max) return;
+          }
+
+          // Derive all rates
+          let annualRate, monthlyRate, dailyRate;
+          if (rateType === "annual") {
+            annualRate = rate;
+            monthlyRate = Math.pow(1 + rate, 1 / 12) - 1;
+            dailyRate = Math.pow(1 + rate, 1 / 365) - 1;
+          } else {
+            monthlyRate = rate;
+            annualRate = Math.pow(1 + rate, 12) - 1;
+            dailyRate = Math.pow(1 + rate, 1 / 30) - 1;
+          }
+
+          renderInvResults(amount, currency, annualRate, monthlyRate, dailyRate, months);
+        });
+
+        function renderInvResults(amount, currency, annualRate, monthlyRate, dailyRate, months) {
+          const dailyGain = amount * dailyRate;
+          const monthlyGain = amount * monthlyRate;
+          const annualGain = amount * annualRate;
+
+          // Build compound growth table
+          const rows = [];
+          let current = amount;
+          for (let m = 1; m <= months; m++) {
+            current = current * (1 + monthlyRate);
+            const totalGain = current - amount;
+            rows.push({ month: m, value: current, totalGain });
+          }
+
+          const sym = currency;
+          const panel = document.getElementById("inv-results-panel");
+
+          panel.innerHTML = `
+            <div class="inv-cards">
+              <div class="inv-card">
+                <div class="inv-card-label"><i class="fa-solid fa-sun"></i> Ganancia Diaria</div>
+                <div class="inv-card-value">${sym} ${formatMoney(dailyGain)}</div>
+                <div class="inv-card-sub">Tasa diaria efectiva: ${(dailyRate * 100).toFixed(5)}%</div>
+              </div>
+              <div class="inv-card is-highlight">
+                <div class="inv-card-label"><i class="fa-solid fa-calendar"></i> Ganancia Mensual</div>
+                <div class="inv-card-value">${sym} ${formatMoney(monthlyGain)}</div>
+                <div class="inv-card-sub">Tasa mensual efectiva: ${(monthlyRate * 100).toFixed(4)}%</div>
+              </div>
+              <div class="inv-card">
+                <div class="inv-card-label"><i class="fa-solid fa-calendar-days"></i> Ganancia Anual</div>
+                <div class="inv-card-value">${sym} ${formatMoney(annualGain)}</div>
+                <div class="inv-card-sub">Tasa anual efectiva: ${(annualRate * 100).toFixed(2)}%</div>
+              </div>
+            </div>
+
+            <div class="inv-chart-panel">
+              <h3><i class="fa-solid fa-chart-area"></i> Proyección de capital (interés compuesto)</h3>
+              <canvas id="inv-chart"></canvas>
+            </div>
+
+            <div class="inv-table">
+              <div class="inv-table-header">
+                <span>Período</span>
+                <span>Capital Acumulado</span>
+                <span>Ganancia Total</span>
+              </div>
+              <div class="inv-table-body">
+                ${rows.map((r) => `
+                  <div class="inv-table-row${r.month % 12 === 0 ? " is-year" : ""}">
+                    <span>${r.month % 12 === 0 ? `<i class="fa-solid fa-star" style="font-size:0.65rem;margin-right:0.3rem;"></i>Año ${r.month / 12}` : `Mes ${r.month}`}</span>
+                    <span>${sym} ${formatMoney(r.value)}</span>
+                    <span class="inv-gain-positive">+${sym} ${formatMoney(r.totalGain)}</span>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `;
+
+          // Draw chart after DOM is laid out
+          requestAnimationFrame(() => drawInvChart([amount, ...rows.map(r => r.value)], amount, sym));
+        }
+
+        function drawInvChart(values, initialAmount, currency) {
+          const canvas = document.getElementById("inv-chart");
+          if (!canvas) return;
+
+          const dpr = window.devicePixelRatio || 1;
+          const W = canvas.parentElement.clientWidth - 64; // subtract 2rem padding each side
+          const H = 220;
+
+          canvas.width = Math.max(W, 100) * dpr;
+          canvas.height = H * dpr;
+          canvas.style.width = Math.max(W, 100) + "px";
+          canvas.style.height = H + "px";
+
+          const ctx = canvas.getContext("2d");
+          ctx.scale(dpr, dpr);
+
+          const pad = { top: 20, right: 20, bottom: 36, left: 76 };
+          const cW = Math.max(W, 100) - pad.left - pad.right;
+          const cH = H - pad.top - pad.bottom;
+
+          const minVal = initialAmount;
+          const maxVal = values[values.length - 1];
+          const range = maxVal - minVal || 1;
+
+          const toX = (i) => pad.left + (i / (values.length - 1)) * cW;
+          const toY = (v) => pad.top + cH - ((v - minVal) / range) * cH;
+
+          const style = getComputedStyle(document.documentElement);
+          const colorMuted   = style.getPropertyValue("--text-muted").trim() || "#888";
+          const colorPos     = style.getPropertyValue("--positive-color").trim() || "#00c896";
+          const colorBorder  = style.getPropertyValue("--border-color").trim() || "#333";
+
+          // Grid lines
+          ctx.setLineDash([3, 4]);
+          ctx.lineWidth = 1;
+          for (let i = 0; i <= 4; i++) {
+            const y = pad.top + (cH / 4) * i;
+            ctx.strokeStyle = colorBorder;
+            ctx.beginPath();
+            ctx.moveTo(pad.left, y);
+            ctx.lineTo(pad.left + cW, y);
+            ctx.stroke();
+            const val = maxVal - (range / 4) * i;
+            ctx.fillStyle = colorMuted;
+            ctx.font = `600 9px Montserrat, sans-serif`;
+            ctx.textAlign = "right";
+            ctx.fillText(`${currency[0]} ${formatMoney(val)}`, pad.left - 6, y + 4);
+          }
+          ctx.setLineDash([]);
+
+          // X-axis labels
+          const step = Math.max(1, Math.ceil(values.length / 7));
+          ctx.fillStyle = colorMuted;
+          ctx.font = `600 9px Montserrat, sans-serif`;
+          ctx.textAlign = "center";
+          for (let i = 0; i < values.length; i += step) {
+            ctx.fillText(i === 0 ? "Hoy" : `M${i}`, toX(i), H - pad.bottom + 14);
+          }
+          if ((values.length - 1) % step !== 0) {
+            ctx.fillText(`M${values.length - 1}`, toX(values.length - 1), H - pad.bottom + 14);
+          }
+
+          // Gradient fill under curve
+          const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
+          grad.addColorStop(0, colorPos + "44");
+          grad.addColorStop(1, colorPos + "00");
+          ctx.beginPath();
+          ctx.moveTo(toX(0), toY(values[0]));
+          values.forEach((v, i) => { if (i > 0) ctx.lineTo(toX(i), toY(v)); });
+          ctx.lineTo(toX(values.length - 1), pad.top + cH);
+          ctx.lineTo(toX(0), pad.top + cH);
+          ctx.closePath();
+          ctx.fillStyle = grad;
+          ctx.fill();
+
+          // Line
+          ctx.beginPath();
+          ctx.moveTo(toX(0), toY(values[0]));
+          values.forEach((v, i) => { if (i > 0) ctx.lineTo(toX(i), toY(v)); });
+          ctx.strokeStyle = colorPos;
+          ctx.lineWidth = 2.5;
+          ctx.lineJoin = "round";
+          ctx.stroke();
+
+          // Start dot
+          ctx.fillStyle = colorPos;
+          ctx.beginPath();
+          ctx.arc(toX(0), toY(values[0]), 4, 0, Math.PI * 2);
+          ctx.fill();
+
+          // End dot
+          ctx.beginPath();
+          ctx.arc(toX(values.length - 1), toY(values[values.length - 1]), 5, 0, Math.PI * 2);
+          ctx.fill();
         }
       }
     </script>
