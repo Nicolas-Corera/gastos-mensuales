@@ -2691,22 +2691,22 @@
           // Live warning
           const amountVal = parseFloat(this.value.replace(/,/g, ""));
           const currency = document.getElementById("inv-currency").value;
-          checkInvAmountWarning(amountVal, currency);
+          // checkInvAmountWarning(amountVal, currency);
         });
 
         document.getElementById("inv-currency").addEventListener("change", function () {
           const amountVal = parseFloat(document.getElementById("inv-amount").value.replace(/,/g, ""));
-          checkInvAmountWarning(amountVal, this.value);
+          // checkInvAmountWarning(amountVal, this.value);
         });
 
-        function checkInvAmountWarning(amount, currency) {
-          const warn = document.getElementById("inv-amount-warning");
-          if (isNaN(amount) || amount <= 0) { warn.style.display = "none"; return; }
-          const rem = getCalcRemaining();
-          if (!rem) { warn.style.display = "none"; return; }
-          const max = currency === "ARS" ? rem.ars : rem.usd;
-          warn.style.display = (amount > max && max > 0) ? "block" : "none";
-        }
+        // function checkInvAmountWarning(amount, currency) {
+        //   const warn = document.getElementById("inv-amount-warning");
+        //   if (isNaN(amount) || amount <= 0) { warn.style.display = "none"; return; }
+        //   const rem = getCalcRemaining();
+        //   if (!rem) { warn.style.display = "none"; return; }
+        //   const max = currency === "ARS" ? rem.ars : rem.usd;
+        //   warn.style.display = (amount > max && max > 0) ? "block" : "none";
+        // }
 
         document.getElementById("inv-form").addEventListener("submit", function (e) {
           e.preventDefault();
