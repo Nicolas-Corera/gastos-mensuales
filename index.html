@@ -2742,15 +2742,17 @@
         });
 
         function renderInvResults(amount, currency, annualRate, monthlyRate, dailyRate, months) {
-          const dailyGain = amount * dailyRate;
-          const monthlyGain = amount * monthlyRate;
-          const annualGain = amount * annualRate;
+          // Ganancias usando capitalización diaria exacta
+          const dailyGain   = amount * (1 + dailyRate) - amount;                    // 1 día
+          const monthlyGain = amount * Math.pow(1 + dailyRate, 30) - amount;        // 30 días
+          const annualGain  = amount * Math.pow(1 + dailyRate, 365) - amount;       // 365 días
 
-          // Build compound growth table
+          // Build compound growth table — capitalización diaria (30 días por mes)
           const rows = [];
           let current = amount;
+          const dailyFactor = Math.pow(1 + dailyRate, 30); // 1 mes = 30 días de capitalización diaria
           for (let m = 1; m <= months; m++) {
-            current = current * (1 + monthlyRate);
+            current = current * dailyFactor;
             const totalGain = current - amount;
             rows.push({ month: m, value: current, totalGain });
           }
