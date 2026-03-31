@@ -2359,6 +2359,21 @@
           });
         }
 
+        // Formatea la ganancia diaria con decimales suficientes para ver el crecimiento
+        function formatGain(amount) {
+          let decimals;
+          const abs = Math.abs(amount);
+          if (abs === 0)       decimals = 2;
+          else if (abs < 0.01) decimals = 8;
+          else if (abs < 1)    decimals = 6;
+          else if (abs < 100)  decimals = 4;
+          else                 decimals = 2;
+          return amount.toLocaleString("en-US", {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals,
+          });
+        }
+
         // === CALCULADORA DE GASTOS PUNTUALES ===
 
         let oneTimeExpenses = [];
@@ -2769,7 +2784,7 @@
             <div class="inv-cards">
               <div class="inv-card">
                 <div class="inv-card-label"><i class="fa-solid fa-sun"></i> Ganancia Día 1</div>
-                <div class="inv-card-value">${sym} ${formatMoney(gainDay)}</div>
+                <div class="inv-card-value">${sym} ${formatGain(gainDay)}</div>
                 <div class="inv-card-sub">Capital día 1: ${sym} ${formatMoney(capDay1)}</div>
               </div>
               <div class="inv-card is-highlight">
@@ -2801,7 +2816,7 @@
                     <span>${r.day % 30 === 0
                       ? `<i class="fa-solid fa-star" style="font-size:0.65rem;margin-right:0.3rem;"></i>Mes ${r.day / 30}`
                       : `Día ${r.day}`}</span>
-                    <span class="inv-gain-positive">+${sym} ${formatMoney(r.gainHoy)}</span>
+                    <span class="inv-gain-positive">+${sym} ${formatGain(r.gainHoy)}</span>
                     <span>${sym} ${formatMoney(r.capital)}</span>
                   </div>
                 `).join("")}
