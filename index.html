@@ -1144,6 +1144,47 @@
         color: var(--error-color);
       }
 
+      .btn-close-month {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        padding: 0.4rem 0.8rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .btn-close-month:hover {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+      }
+
+      .calc-item.inactive {
+        opacity: 0.45;
+      }
+
+      .calc-item.inactive .calc-item-name,
+      .calc-item.inactive .calc-item-amount {
+        text-decoration: line-through;
+      }
+
+      .calc-item-badge {
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 0.1rem 0.4rem;
+        border-radius: 3px;
+        background: var(--border-color);
+        color: var(--text-muted);
+        margin-left: 0.4rem;
+        vertical-align: middle;
+      }
+
       @media (max-width: 900px) {
         .calc-summary {
           grid-template-columns: repeat(2, 1fr);
@@ -1985,9 +2026,14 @@
           <div class="calc-list-panel">
             <div class="calc-list-header">
               <div class="calc-list-header-title">Gastos puntuales del mes</div>
-              <button class="btn-clear-all" onclick="clearOneTimeExpenses()">
-                <i class="fa-solid fa-trash"></i> Limpiar todo
-              </button>
+              <div style="display:flex;gap:0.5rem;">
+                <button class="btn-close-month" onclick="resetMonthExtras()">
+                  <i class="fa-solid fa-calendar-check"></i> Cerrar Mes
+                </button>
+                <button class="btn-clear-all" onclick="clearOneTimeExpenses()">
+                  <i class="fa-solid fa-trash"></i> Limpiar todo
+                </button>
+              </div>
             </div>
             <div class="calc-list-body" id="calc-list-body">
               <div class="empty-state">
@@ -2731,6 +2777,15 @@
           saveOneTimeExpensesToFirebase();
         };
 
+        window.resetMonthExtras = function () {
+          const active = oneTimeExpenses.filter((e) => e.active !== false);
+          if (active.length === 0) return;
+          oneTimeExpenses = oneTimeExpenses.map((e) => ({ ...e, active: false }));
+          renderCalcList();
+          updateCalcSummary();
+          saveOneTimeExpensesToFirebase();
+        };
+
         function saveOneTimeExpensesToFirebase() {
           set(oneTimeExpensesRef, oneTimeExpenses).catch((err) =>
             console.error("Error guardando gastos extras:", err),
@@ -2757,18 +2812,22 @@
           let totalUSD = 0;
 
           oneTimeExpenses.forEach((item, index) => {
-            if (item.currency === "USD") {
-              totalARS += item.amount * EXCHANGE_RATE_VENTA;
-              totalUSD += item.amount;
-            } else {
-              totalARS += item.amount;
-              totalUSD += item.amount / EXCHANGE_RATE_COMPRA;
+            const isActive = item.active !== false;
+
+            if (isActive) {
+              if (item.currency === "USD") {
+                totalARS += item.amount * EXCHANGE_RATE_VENTA;
+                totalUSD += item.amount;
+              } else {
+                totalARS += item.amount;
+                totalUSD += item.amount / EXCHANGE_RATE_COMPRA;
+              }
             }
 
             const row = document.createElement("div");
-            row.className = "calc-item";
+            row.className = "calc-item" + (isActive ? "" : " inactive");
             row.innerHTML = `
-              <div class="calc-item-name">${item.name}</div>
+              <div class="calc-item-name">${item.name}${isActive ? "" : '<span class="calc-item-badge">mes cerrado</span>'}</div>
               <div class="calc-item-amount">${item.currency} ${formatMoney(item.amount)}</div>
               <div>
                 <button class="btn-delete" onclick="deleteOneTimeExpense('${item.id}')">
@@ -2779,7 +2838,7 @@
             gsap.fromTo(
               row,
               { opacity: 0, x: -20 },
-              { opacity: 1, x: 0, duration: 0.3, delay: index * 0.05 },
+              { opacity: isActive ? 1 : 0.45, x: 0, duration: 0.3, delay: index * 0.05 },
             );
           });
 
@@ -2807,10 +2866,11 @@
             }
           });
 
-          // Totales extras (gastos puntuales)
+          // Totales extras (gastos puntuales activos del mes)
           let extrasARS = 0;
           let extrasUSD = 0;
           oneTimeExpenses.forEach((item) => {
+            if (item.active === false) return;
             if (item.currency === "USD") {
               extrasARS += item.amount * EXCHANGE_RATE_VENTA;
               extrasUSD += item.amount;
@@ -2934,6 +2994,7 @@
 
           let extrasARS = 0, extrasUSD = 0;
           oneTimeExpenses.forEach((item) => {
+            if (item.active === false) return;
             if (item.currency === "USD") {
               extrasARS += item.amount * EXCHANGE_RATE_VENTA;
               extrasUSD += item.amount;
@@ -3138,9 +3199,10 @@
             }
           });
 
-          // Extras (one-time expenses)
+          // Extras (one-time expenses activos del mes)
           let extrasARS = 0, extrasUSD = 0;
           oneTimeExpenses.forEach((item) => {
+            if (item.active === false) return;
             if (item.currency === "USD") {
               extrasARS += item.amount * EXCHANGE_RATE_VENTA;
               extrasUSD += item.amount;
