@@ -2721,11 +2721,11 @@
 
           if (isNaN(amount) || amount <= 0 || isNaN(rate) || rate <= 0) return;
 
-          // Validate max
+          // Validate max — solo advertencia, no bloquea
           const rem = getCalcRemaining();
           if (rem) {
             const max = currency === "ARS" ? rem.ars : rem.usd;
-            if (max > 0 && amount > max) return;
+            checkInvAmountWarning(amount, currency);
           }
 
           // Derive all rates
