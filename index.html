@@ -1381,6 +1381,167 @@
           padding: 0.7rem 1rem;
         }
       }
+
+      /* ===================================================== */
+      /* === DASHBOARD TAB                                  === */
+      /* ===================================================== */
+      .db-section-title {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 1.2rem;
+      }
+
+      .db-main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      @media (max-width: 900px) {
+        .db-main-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .db-chart-panel,
+      .db-top-panel {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        padding: 2rem;
+      }
+
+      .db-chart-inner {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+
+      #db-donut-chart {
+        flex-shrink: 0;
+      }
+
+      .db-chart-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        flex: 1;
+      }
+
+      .db-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .db-legend-dot {
+        width: 10px;
+        height: 10px;
+        flex-shrink: 0;
+      }
+
+      .db-top-list {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .db-top-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--border-light);
+        gap: 1rem;
+      }
+
+      .db-top-item:last-child {
+        border-bottom: none;
+      }
+
+      .db-top-item-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .db-top-item-cat {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-top: 0.1rem;
+      }
+
+      .db-top-item-value {
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .db-top-item-converted {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .db-actions {
+        margin-bottom: 2rem;
+      }
+
+      .db-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+      }
+
+      @media (max-width: 700px) {
+        .db-actions-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .db-action-btn {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 1.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .db-action-btn:hover {
+        background: var(--text-main);
+        color: var(--surface-color);
+      }
+
+      .db-action-btn i {
+        font-size: 1.4rem;
+      }
+
+      .db-action-btn span {
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
     </style>
   </head>
 
@@ -1466,7 +1627,10 @@
 
       <!-- TABS -->
       <div class="tabs">
-        <button class="tab-btn active" id="tab-btn-suscripciones" onclick="switchTab('suscripciones')">
+        <button class="tab-btn active" id="tab-btn-dashboard" onclick="switchTab('dashboard')">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </button>
+        <button class="tab-btn" id="tab-btn-suscripciones" onclick="switchTab('suscripciones')">
           <i class="fa-solid fa-credit-card"></i> Suscripciones
         </button>
         <button class="tab-btn" id="tab-btn-calculadora" onclick="switchTab('calculadora')">
@@ -1477,8 +1641,103 @@
         </button>
       </div>
 
+      <!-- TAB: DASHBOARD -->
+      <div id="tab-dashboard" class="tab-panel active">
+
+        <!-- Budget strip (disponible) -->
+        <section class="budget-strip gsap-fade" style="animation-delay: 0.05s">
+          <div class="budget-card" id="db-budget-card-ars">
+            <div class="budget-card-label">
+              <i class="fa-solid fa-wallet"></i> Disponible este mes (ARS)
+            </div>
+            <div class="budget-card-value" id="db-budget-remaining-ars">—</div>
+          </div>
+          <div class="budget-card" id="db-budget-card-usd">
+            <div class="budget-card-label">
+              <i class="fa-solid fa-wallet"></i> Disponible este mes (USD)
+            </div>
+            <div class="budget-card-value" id="db-budget-remaining-usd">—</div>
+          </div>
+        </section>
+
+        <!-- Summary cards -->
+        <section class="dashboard gsap-fade" style="animation-delay: 0.1s">
+          <div class="card">
+            <div class="card-title">Gastos Fijos (ARS)</div>
+            <div class="card-value">ARS <span id="db-total-ars">0</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Gastos Fijos (USD)</div>
+            <div class="card-value">USD <span id="db-total-usd">0</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Suscripciones Activas</div>
+            <div class="card-value" id="db-total-items">0</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Tipo de Cambio</div>
+            <div class="card-value" style="font-size:1.3rem;line-height:1.9">
+              <div>
+                <span style="font-size:0.65rem;color:var(--text-muted);font-weight:800;letter-spacing:1px;">COMPRA &nbsp;</span>
+                <span id="db-rate-compra">—</span>
+              </div>
+              <div>
+                <span style="font-size:0.65rem;color:var(--text-muted);font-weight:800;letter-spacing:1px;">VENTA &nbsp;&nbsp;</span>
+                <span id="db-rate-venta">—</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Chart + Top subscriptions -->
+        <section class="db-main-grid gsap-fade" style="animation-delay: 0.2s">
+          <!-- Donut chart -->
+          <div class="db-chart-panel">
+            <div class="db-section-title">Gastos por Categoría</div>
+            <div class="db-chart-inner">
+              <canvas id="db-donut-chart" width="180" height="180"></canvas>
+              <div id="db-chart-legend" class="db-chart-legend"></div>
+            </div>
+          </div>
+
+          <!-- Top subscriptions -->
+          <div class="db-top-panel">
+            <div class="db-section-title">Top Suscripciones</div>
+            <div id="db-top-list" class="db-top-list">
+              <div style="padding:2rem 0;text-align:center;color:var(--text-muted);font-size:0.82rem;font-weight:600;text-transform:uppercase;">
+                Sin suscripciones todavía
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick access -->
+        <section class="db-actions gsap-fade" style="animation-delay: 0.3s">
+          <div class="db-section-title">Accesos Rápidos</div>
+          <div class="db-actions-grid">
+            <button class="db-action-btn" onclick="switchTab('suscripciones')">
+              <i class="fa-solid fa-credit-card"></i>
+              <span>Suscripciones</span>
+            </button>
+            <button class="db-action-btn" onclick="switchTab('calculadora')">
+              <i class="fa-solid fa-calculator"></i>
+              <span>Calculadora</span>
+            </button>
+            <button class="db-action-btn" onclick="switchTab('inversiones')">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Inversiones</span>
+            </button>
+            <a href="/config/" class="db-action-btn">
+              <i class="fa-solid fa-gear"></i>
+              <span>Configuración</span>
+            </a>
+          </div>
+        </section>
+
+      </div><!-- /tab-dashboard -->
+
       <!-- TAB: SUSCRIPCIONES -->
-      <div id="tab-suscripciones" class="tab-panel active">
+      <div id="tab-suscripciones" class="tab-panel">
 
       <!-- ================================================ -->
       <!-- BUDGET STRIP: Disponible ARS + Disponible USD    -->
@@ -2186,6 +2445,8 @@
           let totalUSD = 0;
           let activeItems = 0;
 
+          updateDashboardTab();
+
           subscriptions.forEach((item) => {
             const isCompleted =
               item.isInstallment &&
@@ -2225,6 +2486,7 @@
 
         // Called when budget changes from Firebase OR when totals change
         function updateBudgetCards() {
+          updateDashboardTab();
           // Recalculate totals inline
           let totalARS = 0;
           let totalUSD = 0;
@@ -2432,6 +2694,9 @@
           }
           if (tabName === "inversiones") {
             updateInvAvailable();
+          }
+          if (tabName === "dashboard") {
+            updateDashboardTab();
           }
         };
 
@@ -2817,6 +3082,216 @@
           if (rows.length > 0) chartValues.push(rows[rows.length - 1].capital);
 
           requestAnimationFrame(() => drawInvChart(chartValues, amount, sym));
+        }
+
+        // ============================================================
+        // === DASHBOARD TAB ==========================================
+        // ============================================================
+
+        const DB_CATEGORY_COLORS = {
+          Streaming: "#e74c3c",
+          Software: "#3498db",
+          Servicios: "#2ecc71",
+          Educacion: "#9b59b6",
+          Salud: "#e67e22",
+          Otros: "#95a5a6",
+        };
+
+        function dbGetColor(cat) {
+          return DB_CATEGORY_COLORS[cat] || DB_CATEGORY_COLORS.Otros;
+        }
+
+        function updateDashboardTab() {
+          // Only update if dashboard panel exists
+          if (!document.getElementById("db-total-ars")) return;
+
+          // Compute totals
+          let totalARS = 0, totalUSD = 0, activeItems = 0;
+          subscriptions.forEach((item) => {
+            const done = item.isInstallment && item.paidInstallments >= item.totalInstallments;
+            if (!done) {
+              activeItems++;
+              if (item.currency === "USD") {
+                totalARS += item.amount * EXCHANGE_RATE_VENTA;
+                totalUSD += item.amount;
+              } else {
+                totalARS += item.amount;
+                totalUSD += item.amount / EXCHANGE_RATE_COMPRA;
+              }
+            }
+          });
+
+          document.getElementById("db-total-ars").textContent = formatMoney(totalARS);
+          document.getElementById("db-total-usd").textContent = formatMoney(totalUSD);
+          document.getElementById("db-total-items").textContent = activeItems;
+          document.getElementById("db-rate-compra").textContent = formatMoney(EXCHANGE_RATE_COMPRA);
+          document.getElementById("db-rate-venta").textContent = formatMoney(EXCHANGE_RATE_VENTA);
+
+          // Budget cards
+          dbUpdateBudgetCards(totalARS, totalUSD);
+
+          // Category totals for chart
+          const catTotals = {};
+          subscriptions.forEach((item) => {
+            const done = item.isInstallment && item.paidInstallments >= item.totalInstallments;
+            if (!done) {
+              const arsVal = item.currency === "USD" ? item.amount * EXCHANGE_RATE_VENTA : item.amount;
+              catTotals[item.category] = (catTotals[item.category] || 0) + arsVal;
+            }
+          });
+          dbDrawDonut(catTotals);
+
+          // Top 5 subscriptions by ARS value
+          const active = subscriptions.filter((item) =>
+            !(item.isInstallment && item.paidInstallments >= item.totalInstallments)
+          );
+          const sorted = [...active].sort((a, b) => {
+            const aARS = a.currency === "USD" ? a.amount * EXCHANGE_RATE_VENTA : a.amount;
+            const bARS = b.currency === "USD" ? b.amount * EXCHANGE_RATE_VENTA : b.amount;
+            return bARS - aARS;
+          });
+          dbRenderTopList(sorted.slice(0, 5));
+        }
+
+        function dbUpdateBudgetCards(totalARS, totalUSD) {
+          const arsEl = document.getElementById("db-budget-remaining-ars");
+          const usdEl = document.getElementById("db-budget-remaining-usd");
+          const arsCard = document.getElementById("db-budget-card-ars");
+          const usdCard = document.getElementById("db-budget-card-usd");
+
+          if (budgetAmount === 0) {
+            arsEl.textContent = "—";
+            usdEl.textContent = "—";
+            arsCard.classList.remove("negative");
+            usdCard.classList.remove("negative");
+            arsEl.className = "budget-card-value";
+            usdEl.className = "budget-card-value";
+            return;
+          }
+
+          let budgetARS, budgetUSD;
+          if (budgetCurrency === "ARS") {
+            budgetARS = budgetAmount;
+            budgetUSD = budgetAmount / EXCHANGE_RATE_COMPRA;
+          } else {
+            budgetUSD = budgetAmount;
+            budgetARS = budgetAmount * EXCHANGE_RATE_VENTA;
+          }
+
+          const remARS = budgetARS - totalARS;
+          const remUSD = budgetUSD - totalUSD;
+
+          arsCard.classList.toggle("negative", remARS < 0);
+          usdCard.classList.toggle("negative", remUSD < 0);
+          arsEl.className = "budget-card-value " + (remARS < 0 ? "negative" : "positive");
+          usdEl.className = "budget-card-value " + (remUSD < 0 ? "negative" : "positive");
+          arsEl.textContent = (remARS < 0 ? "− " : "") + "ARS " + formatMoney(Math.abs(remARS));
+          usdEl.textContent = (remUSD < 0 ? "− " : "") + "USD " + formatMoney(Math.abs(remUSD));
+        }
+
+        function dbDrawDonut(catTotals) {
+          const canvas = document.getElementById("db-donut-chart");
+          if (!canvas) return;
+          const ctx = canvas.getContext("2d");
+          const legend = document.getElementById("db-chart-legend");
+          const W = 180, CX = W / 2, CY = W / 2;
+          const outerR = 75, innerR = 42;
+
+          ctx.clearRect(0, 0, W, W);
+          legend.innerHTML = "";
+
+          const total = Object.values(catTotals).reduce((s, v) => s + v, 0);
+
+          const style = getComputedStyle(document.documentElement);
+          const surfaceColor = style.getPropertyValue("--surface-color").trim() || "#ffffff";
+          const mutedColor = style.getPropertyValue("--text-muted").trim() || "#666666";
+          const mainColor = style.getPropertyValue("--text-main").trim() || "#000000";
+          const borderColor = style.getPropertyValue("--border-color").trim() || "#cccccc";
+
+          if (total === 0) {
+            ctx.beginPath();
+            ctx.arc(CX, CY, outerR, 0, Math.PI * 2);
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = outerR - innerR;
+            ctx.stroke();
+
+            ctx.fillStyle = mutedColor;
+            ctx.font = "600 10px Montserrat, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("SIN DATOS", CX, CY);
+            return;
+          }
+
+          const entries = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
+          let startAngle = -Math.PI / 2;
+
+          entries.forEach(([cat, val]) => {
+            const slice = (val / total) * Math.PI * 2;
+            const color = dbGetColor(cat);
+
+            // Draw arc as thick stroke (donut effect)
+            ctx.beginPath();
+            ctx.arc(CX, CY, (outerR + innerR) / 2, startAngle, startAngle + slice);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = outerR - innerR;
+            ctx.lineCap = "butt";
+            ctx.stroke();
+
+            startAngle += slice;
+
+            const pct = Math.round((val / total) * 100);
+            const li = document.createElement("div");
+            li.className = "db-legend-item";
+            li.innerHTML = `
+              <div class="db-legend-dot" style="background:${color}"></div>
+              <span>${cat} <span style="color:var(--text-muted);font-weight:400">${pct}%</span></span>
+            `;
+            legend.appendChild(li);
+          });
+
+          // Center label
+          ctx.fillStyle = mutedColor;
+          ctx.font = "700 9px Montserrat, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("TOTAL ARS", CX, CY - 8);
+          ctx.fillStyle = mainColor;
+          ctx.font = "800 11px Montserrat, sans-serif";
+          const label = total >= 1000000
+            ? (total / 1000000).toFixed(1) + "M"
+            : total >= 1000
+            ? Math.round(total / 1000) + "K"
+            : Math.round(total).toString();
+          ctx.fillText(label, CX, CY + 8);
+        }
+
+        function dbRenderTopList(items) {
+          const container = document.getElementById("db-top-list");
+          if (!container) return;
+          if (items.length === 0) {
+            container.innerHTML = `<div style="padding:2rem 0;text-align:center;color:var(--text-muted);font-size:0.82rem;font-weight:600;text-transform:uppercase;">Sin suscripciones</div>`;
+            return;
+          }
+          container.innerHTML = items.map((item) => {
+            const arsVal = item.currency === "USD" ? item.amount * EXCHANGE_RATE_VENTA : item.amount;
+            const usdVal = item.currency === "USD" ? item.amount : item.amount / EXCHANGE_RATE_COMPRA;
+            const color = dbGetColor(item.category);
+            return `
+              <div class="db-top-item">
+                <div>
+                  <div class="db-top-item-name">
+                    <span style="width:8px;height:8px;background:${color};display:inline-block;flex-shrink:0"></span>
+                    ${item.name}
+                  </div>
+                  <div class="db-top-item-cat">${item.category}</div>
+                </div>
+                <div>
+                  <div class="db-top-item-value">${item.currency} ${formatMoney(item.amount)}</div>
+                  <div class="db-top-item-converted">${item.currency === "USD" ? "ARS" : "USD"} ${formatMoney(item.currency === "USD" ? arsVal : usdVal)}</div>
+                </div>
+              </div>`;
+          }).join("");
         }
 
         function drawInvChart(values, initialAmount, currency) {
