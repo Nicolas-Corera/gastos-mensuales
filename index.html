@@ -665,6 +665,17 @@
         opacity: 0.5;
       }
 
+      .badge-pagado {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        background: var(--positive-color, #22c55e);
+        color: #fff;
+      }
+
       footer {
         border-top: 3px solid var(--border-light);
       }
@@ -2354,6 +2365,19 @@
           }
         };
 
+        function getCurrentMonth() {
+          const now = new Date();
+          return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        }
+
+        // Returns true if the subscription should be EXCLUDED from financial totals.
+        // A completed subscription is only excluded starting the month AFTER it was fully paid.
+        function isSubscriptionExcluded(item) {
+          if (!item.isInstallment || item.paidInstallments < item.totalInstallments) return false;
+          if (!item.completedMonth) return true; // backward compat: already completed before this feature
+          return item.completedMonth < getCurrentMonth();
+        }
+
         window.payInstallment = function (id) {
           const item = subscriptions.find((i) => i.id === id);
           if (
@@ -2362,6 +2386,10 @@
             item.paidInstallments < item.totalInstallments
           ) {
             item.paidInstallments++;
+            // Record the month when all installments were completed
+            if (item.paidInstallments >= item.totalInstallments) {
+              item.completedMonth = getCurrentMonth();
+            }
             renderList();
             updateDashboard();
             saveDataToFirebase();
@@ -2456,23 +2484,30 @@
               convertedText = `USD ${formatMoney(item.amount / EXCHANGE_RATE_COMPRA)} <span style="font-size:0.65rem">(Compra)</span>`;
             }
 
-            const isCompleted =
+            const allPaid =
               item.isInstallment &&
               item.paidInstallments >= item.totalInstallments;
-            const rowClass = isCompleted
+            const paidThisMonth =
+              allPaid && item.completedMonth === getCurrentMonth();
+            const saldado = allPaid && !paidThisMonth;
+            const rowClass = saldado
               ? "list-item item-completed"
               : "list-item";
 
             let installmentHtml = "";
             if (item.isInstallment) {
+              let statusHtml;
+              if (!allPaid) {
+                statusHtml = `<button class="btn-pay" onclick="payInstallment('${item.id}')">+ Pagar 1</button>`;
+              } else if (paidThisMonth) {
+                statusHtml = `<span class="badge-pagado">PAGADO</span>`;
+              } else {
+                statusHtml = `<span>(Saldado)</span>`;
+              }
               installmentHtml = `
                             <div class="installment-info">
                                 Cuota: ${item.paidInstallments} / ${item.totalInstallments}
-                                ${
-                                  !isCompleted
-                                    ? `<button class="btn-pay" onclick="payInstallment('${item.id}')">+ Pagar 1</button>`
-                                    : "<span>(Saldado)</span>"
-                                }
+                                ${statusHtml}
                             </div>`;
             }
 
@@ -2510,10 +2545,7 @@
           updateDashboardTab();
 
           subscriptions.forEach((item) => {
-            const isCompleted =
-              item.isInstallment &&
-              item.paidInstallments >= item.totalInstallments;
-            if (!isCompleted) {
+            if (!isSubscriptionExcluded(item)) {
               activeItems++;
               if (item.currency === "USD") {
                 totalARS += item.amount * EXCHANGE_RATE_VENTA;
@@ -2553,10 +2585,7 @@
           let totalARS = 0;
           let totalUSD = 0;
           subscriptions.forEach((item) => {
-            const isCompleted =
-              item.isInstallment &&
-              item.paidInstallments >= item.totalInstallments;
-            if (!isCompleted) {
+            if (!isSubscriptionExcluded(item)) {
               if (item.currency === "USD") {
                 totalARS += item.amount * EXCHANGE_RATE_VENTA;
                 totalUSD += item.amount;
@@ -2980,8 +3009,7 @@
 
           let fixedARS = 0, fixedUSD = 0;
           subscriptions.forEach((item) => {
-            const isCompleted = item.isInstallment && item.paidInstallments >= item.totalInstallments;
-            if (!isCompleted) {
+            if (!isSubscriptionExcluded(item)) {
               if (item.currency === "USD") {
                 fixedARS += item.amount * EXCHANGE_RATE_VENTA;
                 fixedUSD += item.amount;
@@ -3187,8 +3215,7 @@
           // Fixed (subscriptions)
           let fixedARS = 0, fixedUSD = 0;
           subscriptions.forEach((item) => {
-            const done = item.isInstallment && item.paidInstallments >= item.totalInstallments;
-            if (!done) {
+            if (!isSubscriptionExcluded(item)) {
               if (item.currency === "USD") {
                 fixedARS += item.amount * EXCHANGE_RATE_VENTA;
                 fixedUSD += item.amount;
@@ -3232,8 +3259,7 @@
           // Category totals for bar chart (subscriptions only)
           const catTotals = {};
           subscriptions.forEach((item) => {
-            const done = item.isInstallment && item.paidInstallments >= item.totalInstallments;
-            if (!done) {
+            if (!isSubscriptionExcluded(item)) {
               const arsVal = item.currency === "USD" ? item.amount * EXCHANGE_RATE_VENTA : item.amount;
               catTotals[item.category] = (catTotals[item.category] || 0) + arsVal;
             }
@@ -3241,9 +3267,7 @@
           dbDrawBarChart(catTotals);
 
           // Top 5 subscriptions by ARS value
-          const active = subscriptions.filter((item) =>
-            !(item.isInstallment && item.paidInstallments >= item.totalInstallments)
-          );
+          const active = subscriptions.filter((item) => !isSubscriptionExcluded(item));
           const sorted = [...active].sort((a, b) => {
             const aARS = a.currency === "USD" ? a.amount * EXCHANGE_RATE_VENTA : a.amount;
             const bARS = b.currency === "USD" ? b.amount * EXCHANGE_RATE_VENTA : b.amount;
