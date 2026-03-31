@@ -930,6 +930,240 @@
           font-size: 1.5rem;
         }
       }
+
+      /* === TABS === */
+      .tabs {
+        display: flex;
+        border-bottom: 2px solid var(--text-main);
+        margin-bottom: 2rem;
+      }
+
+      .tab-btn {
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        padding: 0.85rem 1.75rem;
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        color: var(--text-muted);
+        transition: color 0.2s;
+        margin-bottom: -2px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .tab-btn.active {
+        color: var(--text-main);
+        border-bottom-color: var(--text-main);
+      }
+
+      .tab-btn:hover {
+        color: var(--text-main);
+      }
+
+      .tab-panel {
+        display: none;
+      }
+
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* === CALCULATOR === */
+      .calc-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .calc-card {
+        background: var(--surface-color);
+        padding: 1.75rem;
+        border: 1px solid var(--border-color);
+        position: relative;
+      }
+
+      .calc-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: var(--border-color);
+      }
+
+      .calc-card.is-remaining::before {
+        background-color: var(--positive-color);
+      }
+
+      .calc-card.is-remaining.negative::before {
+        background-color: var(--negative-color);
+      }
+
+      .calc-card-title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+      }
+
+      .calc-card-ars {
+        font-size: 1.5rem;
+        font-weight: 800;
+        word-break: break-all;
+        margin-bottom: 0.2rem;
+      }
+
+      .calc-card-usd {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .calc-card-ars.positive {
+        color: var(--positive-color);
+      }
+
+      .calc-card-ars.negative {
+        color: var(--negative-color);
+      }
+
+      .calc-grid {
+        display: grid;
+        grid-template-columns: 1fr 2.05fr;
+        gap: 2rem;
+      }
+
+      .calc-form-panel {
+        background: var(--surface-color);
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        height: fit-content;
+      }
+
+      .calc-form-panel h2 {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        font-weight: 800;
+      }
+
+      .calc-list-panel {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+      }
+
+      .calc-list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        border-bottom: 2px solid var(--text-main);
+      }
+
+      .calc-list-header-title {
+        font-weight: 800;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+      }
+
+      .calc-list-body {
+        max-height: 400px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-color) transparent;
+      }
+
+      .calc-item {
+        display: grid;
+        grid-template-columns: 2fr 1fr auto;
+        padding: 1.25rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+        align-items: center;
+        transition: background 0.2s;
+        text-transform: uppercase;
+      }
+
+      .calc-item:hover {
+        background: var(--card-bg);
+      }
+
+      .calc-item-name {
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .calc-item-amount {
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .calc-total-row {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 2rem;
+        border-top: 1px solid var(--border-color);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .calc-total-row strong {
+        color: var(--text-main);
+        font-size: 1rem;
+      }
+
+      .btn-clear-all {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        padding: 0.4rem 0.8rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .btn-clear-all:hover {
+        border-color: var(--error-color);
+        color: var(--error-color);
+      }
+
+      @media (max-width: 900px) {
+        .calc-summary {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .calc-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .calc-summary {
+          grid-template-columns: 1fr;
+        }
+        .calc-item {
+          padding: 1rem;
+        }
+        .calc-form-panel {
+          padding: 1.5rem;
+        }
+      }
     </style>
   </head>
 
@@ -1012,6 +1246,19 @@
           </div>
         </div>
       </header>
+
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-btn-suscripciones" onclick="switchTab('suscripciones')">
+          <i class="fa-solid fa-credit-card"></i> Suscripciones
+        </button>
+        <button class="tab-btn" id="tab-btn-calculadora" onclick="switchTab('calculadora')">
+          <i class="fa-solid fa-calculator"></i> Calculadora
+        </button>
+      </div>
+
+      <!-- TAB: SUSCRIPCIONES -->
+      <div id="tab-suscripciones" class="tab-panel active">
 
       <!-- ================================================ -->
       <!-- BUDGET STRIP: Disponible ARS + Disponible USD    -->
@@ -1168,7 +1415,102 @@
           </div>
         </main>
       </section>
-    </div>
+
+      </div><!-- /tab-suscripciones -->
+
+      <!-- TAB: CALCULADORA -->
+      <div id="tab-calculadora" class="tab-panel">
+
+        <!-- RESUMEN DEL MES -->
+        <section class="calc-summary">
+          <div class="calc-card">
+            <div class="calc-card-title"><i class="fa-solid fa-wallet"></i> Presupuesto</div>
+            <div class="calc-card-ars" id="calc-budget-ars">—</div>
+            <div class="calc-card-usd" id="calc-budget-usd">Sin presupuesto configurado</div>
+          </div>
+          <div class="calc-card">
+            <div class="calc-card-title"><i class="fa-solid fa-credit-card"></i> Gastos Fijos</div>
+            <div class="calc-card-ars" id="calc-fixed-ars">ARS 0</div>
+            <div class="calc-card-usd" id="calc-fixed-usd">≈ USD 0</div>
+          </div>
+          <div class="calc-card">
+            <div class="calc-card-title"><i class="fa-solid fa-bag-shopping"></i> Extras del Mes</div>
+            <div class="calc-card-ars" id="calc-extras-ars">ARS 0</div>
+            <div class="calc-card-usd" id="calc-extras-usd">≈ USD 0</div>
+          </div>
+          <div class="calc-card is-remaining">
+            <div class="calc-card-title" id="calc-remaining-title"><i class="fa-solid fa-circle-check"></i> Disponible</div>
+            <div class="calc-card-ars" id="calc-remaining-ars">—</div>
+            <div class="calc-card-usd" id="calc-remaining-usd"></div>
+          </div>
+        </section>
+
+        <!-- GRID: FORM + LIST -->
+        <div class="calc-grid">
+          <!-- Formulario -->
+          <aside class="calc-form-panel">
+            <h2>Agregar Gasto Extra</h2>
+            <form id="calc-form">
+              <div class="form-group">
+                <label for="calc-name">Descripción del gasto</label>
+                <input
+                  type="text"
+                  id="calc-name"
+                  class="form-control"
+                  placeholder="Ej. TV Samsung, Cena, Ropa..."
+                  required
+                />
+              </div>
+              <div class="form-group row-group">
+                <div>
+                  <label for="calc-amount">Monto</label>
+                  <input
+                    type="text"
+                    id="calc-amount"
+                    class="form-control"
+                    placeholder="0.00"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="calc-currency">Moneda</label>
+                  <select id="calc-currency" class="form-control">
+                    <option value="ARS">ARS</option>
+                    <option value="USD">USD</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn">
+                <i class="fa-solid fa-plus"></i> Agregar
+              </button>
+            </form>
+          </aside>
+
+          <!-- Lista de extras -->
+          <div class="calc-list-panel">
+            <div class="calc-list-header">
+              <div class="calc-list-header-title">Gastos puntuales del mes</div>
+              <button class="btn-clear-all" onclick="clearOneTimeExpenses()">
+                <i class="fa-solid fa-trash"></i> Limpiar todo
+              </button>
+            </div>
+            <div class="calc-list-body" id="calc-list-body">
+              <div class="empty-state">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <h3>Sin gastos extras por ahora</h3>
+                <p>Agrega un gasto puntual usando el panel lateral.</p>
+              </div>
+            </div>
+            <div class="calc-total-row" id="calc-total-row" style="display:none;">
+              <span>Total extras:</span>
+              <strong id="calc-total-value"></strong>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tab-calculadora -->
+
+    </div><!-- /container -->
 
     <footer>
       <div class="container">
@@ -1704,6 +2046,248 @@
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           });
+        }
+
+        // === CALCULADORA DE GASTOS PUNTUALES ===
+
+        let oneTimeExpenses = [];
+        const oneTimeExpensesRef = ref(
+          db,
+          `usuarios/${user.uid}/oneTimeExpenses`,
+        );
+
+        onValue(oneTimeExpensesRef, (snapshot) => {
+          const data = snapshot.val();
+          let incoming = [];
+          if (data) {
+            incoming = Array.isArray(data) ? data : Object.values(data);
+          }
+          if (JSON.stringify(incoming) !== JSON.stringify(oneTimeExpenses)) {
+            oneTimeExpenses = incoming;
+            renderCalcList();
+            updateCalcSummary();
+          }
+        });
+
+        document
+          .getElementById("calc-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            const name = document.getElementById("calc-name").value.trim();
+            const amountRaw = document
+              .getElementById("calc-amount")
+              .value.replace(/,/g, "");
+            const amount = parseFloat(amountRaw);
+            const currency = document.getElementById("calc-currency").value;
+            if (!name || isNaN(amount) || amount <= 0) return;
+            const newItem = {
+              id: Date.now().toString(),
+              name,
+              amount,
+              currency,
+            };
+            oneTimeExpenses.push(newItem);
+            renderCalcList();
+            updateCalcSummary();
+            saveOneTimeExpensesToFirebase();
+            this.reset();
+            document.getElementById("calc-name").focus();
+          });
+
+        document
+          .getElementById("calc-amount")
+          .addEventListener("input", function () {
+            let val = this.value.replace(/[^0-9.]/g, "");
+            let parts = val.split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            if (parts.length > 2) parts.pop();
+            this.value = parts.join(".");
+          });
+
+        window.switchTab = function (tabName) {
+          document
+            .querySelectorAll(".tab-panel")
+            .forEach((p) => p.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-btn")
+            .forEach((b) => b.classList.remove("active"));
+          document.getElementById(`tab-${tabName}`).classList.add("active");
+          document
+            .getElementById(`tab-btn-${tabName}`)
+            .classList.add("active");
+          if (tabName === "calculadora") {
+            updateCalcSummary();
+          }
+        };
+
+        window.deleteOneTimeExpense = function (id) {
+          oneTimeExpenses = oneTimeExpenses.filter((e) => e.id !== id);
+          renderCalcList();
+          updateCalcSummary();
+          saveOneTimeExpensesToFirebase();
+        };
+
+        window.clearOneTimeExpenses = function () {
+          if (oneTimeExpenses.length === 0) return;
+          oneTimeExpenses = [];
+          renderCalcList();
+          updateCalcSummary();
+          saveOneTimeExpensesToFirebase();
+        };
+
+        function saveOneTimeExpensesToFirebase() {
+          set(oneTimeExpensesRef, oneTimeExpenses).catch((err) =>
+            console.error("Error guardando gastos extras:", err),
+          );
+        }
+
+        function renderCalcList() {
+          const body = document.getElementById("calc-list-body");
+          const totalRow = document.getElementById("calc-total-row");
+          body.innerHTML = "";
+
+          if (oneTimeExpenses.length === 0) {
+            body.innerHTML = `
+              <div class="empty-state">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <h3>Sin gastos extras por ahora</h3>
+                <p>Agrega un gasto puntual usando el panel lateral.</p>
+              </div>`;
+            totalRow.style.display = "none";
+            return;
+          }
+
+          let totalARS = 0;
+          let totalUSD = 0;
+
+          oneTimeExpenses.forEach((item, index) => {
+            if (item.currency === "USD") {
+              totalARS += item.amount * EXCHANGE_RATE_VENTA;
+              totalUSD += item.amount;
+            } else {
+              totalARS += item.amount;
+              totalUSD += item.amount / EXCHANGE_RATE_COMPRA;
+            }
+
+            const row = document.createElement("div");
+            row.className = "calc-item";
+            row.innerHTML = `
+              <div class="calc-item-name">${item.name}</div>
+              <div class="calc-item-amount">${item.currency} ${formatMoney(item.amount)}</div>
+              <div>
+                <button class="btn-delete" onclick="deleteOneTimeExpense('${item.id}')">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>`;
+            body.appendChild(row);
+            gsap.fromTo(
+              row,
+              { opacity: 0, x: -20 },
+              { opacity: 1, x: 0, duration: 0.3, delay: index * 0.05 },
+            );
+          });
+
+          document.getElementById("calc-total-value").textContent =
+            `ARS ${formatMoney(totalARS)}  ≈  USD ${formatMoney(totalUSD)}`;
+          totalRow.style.display = "flex";
+        }
+
+        function updateCalcSummary() {
+          // Totales fijos (suscripciones activas)
+          let fixedARS = 0;
+          let fixedUSD = 0;
+          subscriptions.forEach((item) => {
+            const isCompleted =
+              item.isInstallment &&
+              item.paidInstallments >= item.totalInstallments;
+            if (!isCompleted) {
+              if (item.currency === "USD") {
+                fixedARS += item.amount * EXCHANGE_RATE_VENTA;
+                fixedUSD += item.amount;
+              } else {
+                fixedARS += item.amount;
+                fixedUSD += item.amount / EXCHANGE_RATE_COMPRA;
+              }
+            }
+          });
+
+          // Totales extras (gastos puntuales)
+          let extrasARS = 0;
+          let extrasUSD = 0;
+          oneTimeExpenses.forEach((item) => {
+            if (item.currency === "USD") {
+              extrasARS += item.amount * EXCHANGE_RATE_VENTA;
+              extrasUSD += item.amount;
+            } else {
+              extrasARS += item.amount;
+              extrasUSD += item.amount / EXCHANGE_RATE_COMPRA;
+            }
+          });
+
+          // Cards fijos y extras
+          document.getElementById("calc-fixed-ars").textContent =
+            `ARS ${formatMoney(fixedARS)}`;
+          document.getElementById("calc-fixed-usd").textContent =
+            `≈ USD ${formatMoney(fixedUSD)}`;
+          document.getElementById("calc-extras-ars").textContent =
+            `ARS ${formatMoney(extrasARS)}`;
+          document.getElementById("calc-extras-usd").textContent =
+            `≈ USD ${formatMoney(extrasUSD)}`;
+
+          const remainingCard = document
+            .getElementById("calc-remaining-ars")
+            .closest(".calc-card");
+          const remainingTitleEl = document.getElementById(
+            "calc-remaining-title",
+          );
+
+          if (budgetAmount === 0) {
+            // Sin presupuesto: mostrar total gastado
+            document.getElementById("calc-budget-ars").textContent = "—";
+            document.getElementById("calc-budget-usd").textContent =
+              "Sin presupuesto configurado";
+            const totalSpentARS = fixedARS + extrasARS;
+            const totalSpentUSD = fixedUSD + extrasUSD;
+            const remEl = document.getElementById("calc-remaining-ars");
+            remEl.textContent = `ARS ${formatMoney(totalSpentARS)}`;
+            remEl.className = "calc-card-ars";
+            document.getElementById("calc-remaining-usd").textContent =
+              `≈ USD ${formatMoney(totalSpentUSD)}`;
+            remainingTitleEl.innerHTML =
+              '<i class="fa-solid fa-sigma"></i> Total Gastado';
+            remainingCard.classList.remove("negative");
+          } else {
+            // Con presupuesto: mostrar disponible
+            let budgetARS, budgetUSD;
+            if (budgetCurrency === "ARS") {
+              budgetARS = budgetAmount;
+              budgetUSD = budgetAmount / EXCHANGE_RATE_COMPRA;
+            } else {
+              budgetUSD = budgetAmount;
+              budgetARS = budgetAmount * EXCHANGE_RATE_VENTA;
+            }
+            document.getElementById("calc-budget-ars").textContent =
+              `ARS ${formatMoney(budgetARS)}`;
+            document.getElementById("calc-budget-usd").textContent =
+              `≈ USD ${formatMoney(budgetUSD)}`;
+
+            const remainingARS = budgetARS - fixedARS - extrasARS;
+            const remainingUSD = budgetUSD - fixedUSD - extrasUSD;
+            const isNeg = remainingARS < 0;
+
+            const remEl = document.getElementById("calc-remaining-ars");
+            remEl.textContent =
+              (isNeg ? "− " : "") +
+              `ARS ${formatMoney(Math.abs(remainingARS))}`;
+            remEl.className =
+              "calc-card-ars " + (isNeg ? "negative" : "positive");
+            document.getElementById("calc-remaining-usd").textContent =
+              (remainingUSD < 0 ? "− " : "") +
+              `≈ USD ${formatMoney(Math.abs(remainingUSD))}`;
+            remainingTitleEl.innerHTML =
+              '<i class="fa-solid fa-circle-check"></i> Disponible';
+            remainingCard.classList.toggle("negative", isNeg);
+          }
         }
 
         function animateOnLoad() {
