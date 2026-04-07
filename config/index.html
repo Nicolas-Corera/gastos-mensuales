@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Configuración | Gestor Financiero</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script>
+    const savedTheme = localStorage.getItem("gestor_theme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  </script>
+  <style>
+    :root {
+      --bg: #f5f5f5; --surface: #ffffff; --border: #cccccc; --border-focus: #000000;
+      --text: #000000; --muted: #666666; --card-bg: #fafafa; --border-light: #ebebeb;
+      --btn-bg: #000000; --btn-text: #ffffff; --btn-hover: #333333;
+      --error: #d32f2f; --positive: #1b5e20;
+    }
+    [data-theme="dark"] {
+      --bg: #121212; --surface: #1e1e1e; --border: #333333; --border-focus: #ffffff;
+      --text: #ffffff; --muted: #a0a0a0; --card-bg: #2a2a2a; --border-light: #2a2a2a;
+      --btn-bg: #ffffff; --btn-text: #000000; --btn-hover: #e0e0e0;
+      --positive: #81c784; --error: #ef9a9a;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:"Montserrat",sans-serif; border-radius:0 !important; }
+    body { background:var(--bg); color:var(--text); line-height:1.6; }
+    input, select, textarea { background:var(--surface); color:var(--text); border:1px solid var(--border); font-family:inherit; }
+    input:focus, select:focus { outline:none; border-color:var(--border-focus); }
+
+    .topbar {
+      background:var(--surface);
+      border-bottom:1px solid var(--border);
+      padding:0.75rem 2rem;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      position:sticky;
+      top:0;
+      z-index:100;
+    }
+    .back-btn {
+      text-decoration:none;
+      color:var(--text);
+      font-weight:800;
+      font-size:0.85rem;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      transition:color 0.2s;
+      letter-spacing:0.5px;
+    }
+    .back-btn:hover { color:var(--muted); }
+    .topbar-right { display:flex; align-items:center; gap:0.5rem; }
+    .btn-icon-top {
+      background:var(--surface);
+      border:1px solid var(--border);
+      color:var(--text);
+      width:34px;
+      height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:all 0.2s;
+      font-size:0.85rem;
+    }
+    .btn-icon-top:hover { background:var(--text); color:var(--surface); }
+    .btn-icon-top.danger:hover { background:#c0392b; border-color:#c0392b; color:#fff; }
+
+    .container { max-width:1400px; margin:0 auto; padding:2rem; }
+    header {
+      margin-bottom:2rem;
+      border-bottom:2px solid var(--text);
+      padding-bottom:1rem;
+    }
+    h1 { font-weight:800; font-size:2rem; letter-spacing:-0.5px; text-transform:uppercase; }
+    h1 span { color:var(--muted); font-weight:300; }
+
+    .config-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(420px, 1fr));
+      gap:1.5rem;
+    }
+    .card {
+      background:var(--surface);
+      padding:1.5rem;
+      border:1px solid var(--border);
+      position:relative;
+    }
+    .card::before {
+      content:"";
+      position:absolute;
+      top:0; left:0;
+      width:100%;
+      height:3px;
+      background:var(--text);
+    }
+    .card.danger::before { background:var(--error); }
+    .card.full { grid-column:1/-1; }
+    .card-header {
+      display:flex;
+      align-items:center;
+      gap:0.75rem;
+      font-size:1rem;
+      font-weight:800;
+      text-transform:uppercase;
+      margin-bottom:1.2rem;
+      padding-bottom:0.75rem;
+      border-bottom:1px solid var(--border);
+      letter-spacing:0.5px;
+    }
+    .card-desc { font-size:0.82rem; color:var(--muted); margin-bottom:1.2rem; }
+    .form-group { margin-bottom:1.2rem; }
+    .form-group label {
+      display:block;
+      font-size:0.72rem;
+      font-weight:800;
+      margin-bottom:0.4rem;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    .form-control {
+      width:100%;
+      padding:0.75rem 0.8rem;
+      border:1px solid var(--border);
+      background:var(--bg);
+      font-size:0.92rem;
+      transition:border-color 0.2s;
+    }
+    .form-control:focus { border-color:var(--border-focus); background:var(--surface); }
+    .budget-row { display:grid; grid-template-columns:1fr 120px; gap:0.75rem; }
+    .btn {
+      width:100%;
+      padding:0.85rem;
+      background:var(--btn-bg);
+      color:var(--btn-text);
+      border:none;
+      font-size:0.85rem;
+      font-weight:800;
+      text-transform:uppercase;
+      cursor:pointer;
+      transition:opacity 0.2s;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:0.5rem;
+      letter-spacing:0.5px;
+    }
+    .btn:hover { opacity:0.85; }
+    .btn:disabled { opacity:0.5; cursor:not-allowed; }
+    .btn-danger { background:var(--error); color:#fff; border:none; }
+    .btn-danger:hover { background:#b71c1c; opacity:1; }
+    .theme-options { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .theme-btn {
+      padding:1rem;
+      border:1px solid var(--border);
+      background:var(--bg);
+      color:var(--text);
+      font-weight:800;
+      font-size:0.82rem;
+      text-transform:uppercase;
+      cursor:pointer;
+      transition:all 0.2s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:0.5rem;
+    }
+    .theme-btn.active { background:var(--text); color:var(--surface); border-color:var(--text); }
+    .theme-btn:hover:not(.active) { border-color:var(--text); }
+    .current-email {
+      font-size:0.92rem;
+      font-weight:700;
+      padding:0.75rem;
+      background:var(--card-bg);
+      border:1px solid var(--border-light);
+      margin-bottom:1.2rem;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+    .feedback-msg {
+      margin-top:0.75rem;
+      font-size:0.78rem;
+      font-weight:700;
+      text-transform:uppercase;
+      min-height:1.2rem;
+      transition:all 0.3s;
+    }
+    .feedback-msg.success { color:var(--positive); }
+    .feedback-msg.error { color:var(--error); }
+    .hidden { display:none !important; }
+
+    /* STATS CARD */
+    .stats-summary {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:1px;
+      background:var(--border);
+      border:1px solid var(--border);
+      margin-bottom:1.5rem;
+    }
+    .stat-cell { background:var(--surface); padding:1rem 1.2rem; }
+    .stat-cell-label { font-size:0.65rem; font-weight:800; text-transform:uppercase; color:var(--muted); margin-bottom:0.2rem; letter-spacing:0.5px; }
+    .stat-cell-val { font-size:1.2rem; font-weight:800; }
+
+    /* DANGER ZONE */
+    .danger-list { display:flex; flex-direction:column; gap:1rem; }
+    .danger-item {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:1rem;
+      border:1px solid var(--border);
+      gap:1rem;
+    }
+    .danger-item-text { font-size:0.82rem; }
+    .danger-item-title { font-weight:800; text-transform:uppercase; font-size:0.85rem; margin-bottom:0.15rem; }
+    .danger-item-desc { color:var(--muted); font-size:0.78rem; }
+    .btn-danger-sm {
+      background:var(--error);
+      color:#fff;
+      border:none;
+      padding:0.6rem 1rem;
+      font-size:0.72rem;
+      font-weight:800;
+      text-transform:uppercase;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:opacity 0.2s;
+      display:flex;
+      align-items:center;
+      gap:0.4rem;
+    }
+    .btn-danger-sm:hover { opacity:0.85; }
+
+    /* TOAST */
+    #toast-container { position:fixed; bottom:1.5rem; right:1.5rem; z-index:9999; display:flex; flex-direction:column; gap:0.5rem; }
+    .toast {
+      background:var(--text); color:var(--surface);
+      padding:0.75rem 1.2rem;
+      font-size:0.82rem; font-weight:700;
+      display:flex; align-items:center; gap:0.6rem;
+      box-shadow:4px 4px 0 rgba(0,0,0,0.15);
+      transform:translateX(120%);
+      transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      max-width:320px;
+    }
+    .toast.show { transform:translateX(0); }
+    .toast.success { background:#1b5e20; }
+    .toast.error { background:#c0392b; }
+
+    @media(max-width:600px){
+      .container { padding:1rem; }
+      .topbar { padding:0.6rem 1rem; }
+      .config-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Volver al Panel</a>
+  <div class="topbar-right">
+    <button class="btn-icon-top" onclick="toggleTheme()" title="Cambiar tema">
+      <i class="fa-solid fa-circle-half-stroke"></i>
+    </button>
+    <button class="btn-icon-top danger" onclick="logout()" title="Cerrar sesión">
+      <i class="fa-solid fa-power-off"></i>
+    </button>
+  </div>
+</div>
+
+<div class="container">
+  <header>
+    <h1>Configuración <span>/ Ajustes</span></h1>
+  </header>
+
+  <!-- Stats rápidas -->
+  <div class="stats-summary" id="stats-summary">
+    <div class="stat-cell"><div class="stat-cell-label">Usuario</div><div class="stat-cell-val" id="stat-email">—</div></div>
+    <div class="stat-cell"><div class="stat-cell-label">Presupuesto</div><div class="stat-cell-val" id="stat-budget">—</div></div>
+    <div class="stat-cell"><div class="stat-cell-label">Suscripciones</div><div class="stat-cell-val" id="stat-subs">—</div></div>
+    <div class="stat-cell"><div class="stat-cell-label">Tema</div><div class="stat-cell-val" id="stat-theme">—</div></div>
+    <div class="stat-cell"><div class="stat-cell-label">Último acceso</div><div class="stat-cell-val" id="stat-lastlogin">—</div></div>
+  </div>
+
+  <div class="config-grid">
+
+    <!-- Presupuesto -->
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-wallet"></i> Presupuesto Mensual</div>
+      <p class="card-desc">Definí tu presupuesto mensual para visualizar cuánto te queda disponible después de tus gastos fijos.</p>
+      <div class="form-group">
+        <label>Monto</label>
+        <div class="budget-row">
+          <input type="text" id="budget-amount" class="form-control" placeholder="0.00" oninput="formatBudgetInput(this)"/>
+          <select id="budget-currency" class="form-control">
+            <option value="ARS">ARS</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" id="btn-save-budget" onclick="saveBudget()">
+        <i class="fa-solid fa-floppy-disk"></i> Guardar Presupuesto
+      </button>
+      <div class="feedback-msg" id="budget-feedback"></div>
+    </div>
+
+    <!-- Tema -->
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-palette"></i> Apariencia</div>
+      <p class="card-desc">Seleccioná el tema visual de la aplicación. Se guarda automáticamente en tus preferencias.</p>
+      <div class="theme-options">
+        <button class="theme-btn" id="btn-light" onclick="setTheme('light')">
+          <i class="fa-solid fa-sun"></i> Claro
+        </button>
+        <button class="theme-btn" id="btn-dark" onclick="setTheme('dark')">
+          <i class="fa-solid fa-moon"></i> Oscuro
+        </button>
+      </div>
+    </div>
+
+    <!-- Cambiar correo -->
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-envelope"></i> Cambiar Correo</div>
+      <div class="current-email"><i class="fa-solid fa-user"></i> <span id="current-email-display">Cargando...</span></div>
+      <form id="email-form">
+        <div class="form-group">
+          <label>Nuevo correo electrónico</label>
+          <input type="email" id="new-email" class="form-control" placeholder="nuevo@correo.com" required/>
+        </div>
+        <button type="submit" class="btn" id="btn-change-email">
+          <i class="fa-solid fa-envelope-circle-check"></i> Actualizar Correo
+        </button>
+        <div class="feedback-msg" id="email-feedback"></div>
+      </form>
+    </div>
+
+    <!-- Cambiar contraseña -->
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-key"></i> Cambiar Contraseña</div>
+      <p class="card-desc">Tu contraseña debe tener al menos 6 caracteres. Por seguridad, puede requerir que vuelvas a iniciar sesión.</p>
+      <form id="password-form">
+        <div class="form-group">
+          <label>Nueva contraseña</label>
+          <input type="password" id="new-password" class="form-control" placeholder="••••••••" minlength="6" required/>
+        </div>
+        <div class="form-group">
+          <label>Confirmar contraseña</label>
+          <input type="password" id="confirm-password" class="form-control" placeholder="••••••••" minlength="6" required/>
+        </div>
+        <button type="submit" class="btn" id="btn-change-pwd">
+          <i class="fa-solid fa-key"></i> Actualizar Contraseña
+        </button>
+        <div class="feedback-msg" id="pwd-feedback"></div>
+      </form>
+    </div>
+
+    <!-- Exportar datos -->
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-file-export"></i> Exportar Datos</div>
+      <p class="card-desc">Descargá todos tus datos en formato JSON para hacer un backup o migrar a otra herramienta.</p>
+      <button class="btn" onclick="exportData()">
+        <i class="fa-solid fa-download"></i> Exportar como JSON
+      </button>
+    </div>
+
+    <!-- Zona de peligro -->
+    <div class="card danger">
+      <div class="card-header" style="color:var(--error)"><i class="fa-solid fa-triangle-exclamation"></i> Zona de Peligro</div>
+      <div class="danger-list">
+        <div class="danger-item">
+          <div class="danger-item-text">
+            <div class="danger-item-title">Limpiar suscripciones</div>
+            <div class="danger-item-desc">Elimina todas las suscripciones permanentemente.</div>
+          </div>
+          <button class="btn-danger-sm" onclick="clearSubs()">
+            <i class="fa-solid fa-trash"></i> Limpiar
+          </button>
+        </div>
+        <div class="danger-item">
+          <div class="danger-item-text">
+            <div class="danger-item-title">Limpiar gastos extras</div>
+            <div class="danger-item-desc">Elimina todos los gastos extras registrados.</div>
+          </div>
+          <button class="btn-danger-sm" onclick="clearExtras()">
+            <i class="fa-solid fa-trash"></i> Limpiar
+          </button>
+        </div>
+        <div class="danger-item">
+          <div class="danger-item-text">
+            <div class="danger-item-title">Eliminar mi cuenta</div>
+            <div class="danger-item-desc">Borra permanentemente tu cuenta y todos tus datos. Acción irreversible.</div>
+          </div>
+          <button class="btn-danger-sm" id="btn-delete" onclick="confirmDeleteAccount()">
+            <i class="fa-solid fa-user-slash"></i> Eliminar
+          </button>
+        </div>
+      </div>
+      <div class="feedback-msg" id="delete-feedback"></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut, updatePassword, updateEmail, deleteUser } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getDatabase, ref, update, remove, onValue, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC-03EXQWiqdFsRG0zWaF0Y-5goSyjZsXg",
+  authDomain: "gastos-generales.firebaseapp.com",
+  databaseURL: "https://gastos-generales-default-rtdb.firebaseio.com",
+  projectId: "gastos-generales",
+  storageBucket: "gastos-generales.firebasestorage.app",
+  messagingSenderId: "154259308690",
+  appId: "1:154259308690:web:9924d809ba3d9f0b27664b",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+let currentUser = null;
+
+function showToast(msg, type = "default") {
+  const c = document.getElementById("toast-container");
+  const t = document.createElement("div");
+  t.className = `toast ${type}`;
+  t.innerHTML = `<i class="fa-solid ${type === "success" ? "fa-check" : type === "error" ? "fa-xmark" : "fa-info"}"></i> ${msg}`;
+  c.appendChild(t);
+  requestAnimationFrame(() => { requestAnimationFrame(() => t.classList.add("show")); });
+  setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 400); }, 3500);
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href = "/auth/"; return; }
+  currentUser = user;
+  document.getElementById("current-email-display").textContent = user.email;
+  document.getElementById("stat-email").textContent = user.email.split("@")[0];
+  document.getElementById("stat-theme").textContent = (localStorage.getItem("gestor_theme") || "light") === "dark" ? "Oscuro" : "Claro";
+
+  const lastLogin = new Date(user.metadata.lastSignInTime);
+  document.getElementById("stat-lastlogin").textContent = lastLogin.toLocaleDateString("es-AR");
+
+  updateThemeButtons(document.documentElement.getAttribute("data-theme"));
+
+  onValue(ref(db, `usuarios/${user.uid}/budget`), snap => {
+    const d = snap.val();
+    if (d && d.amount) {
+      const formatted = parseFloat(d.amount).toLocaleString("en-US", { minimumFractionDigits: 2 });
+      document.getElementById("budget-amount").value = formatted;
+      document.getElementById("budget-currency").value = d.currency || "ARS";
+      document.getElementById("stat-budget").textContent = `${d.currency} ${Math.round(d.amount).toLocaleString("es-AR")}`;
+    }
+  }, { onlyOnce: true });
+
+  onValue(ref(db, `usuarios/${user.uid}/suscripciones`), snap => {
+    const count = snap.val() ? Object.keys(snap.val()).length : 0;
+    document.getElementById("stat-subs").textContent = count;
+  }, { onlyOnce: true });
+});
+
+window.logout = function() {
+  signOut(auth).then(() => window.location.href = "/auth/");
+};
+
+window.toggleTheme = function() {
+  const curr = document.documentElement.getAttribute("data-theme");
+  const next = curr === "dark" ? "light" : "dark";
+  setTheme(next);
+};
+
+window.formatBudgetInput = function(el) {
+  let raw = el.value.replace(/[^0-9.]/g, "");
+  const parts = raw.split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  if (parts.length > 2) parts.pop();
+  el.value = parts.join(".");
+};
+
+window.saveBudget = async function() {
+  if (!currentUser) return;
+  const rawVal = document.getElementById("budget-amount").value.replace(/,/g, "");
+  const amount = parseFloat(rawVal) || 0;
+  const currency = document.getElementById("budget-currency").value;
+  const feedback = document.getElementById("budget-feedback");
+  const btn = document.getElementById("btn-save-budget");
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+  try {
+    await update(ref(db, `usuarios/${currentUser.uid}/budget`), { amount, currency });
+    feedback.innerText = "¡Presupuesto guardado!";
+    feedback.className = "feedback-msg success";
+    document.getElementById("stat-budget").textContent = `${currency} ${Math.round(amount).toLocaleString("es-AR")}`;
+    showToast("Presupuesto guardado", "success");
+  } catch(err) {
+    feedback.innerText = "Error al guardar.";
+    feedback.className = "feedback-msg error";
+    showToast("Error al guardar", "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Presupuesto';
+    setTimeout(() => { feedback.className = "feedback-msg"; }, 3000);
+  }
+};
+
+async function syncToRTDB(data) {
+  if (!currentUser) return;
+  try { await update(ref(db, "usuarios/" + currentUser.uid), data); } catch(e) {}
+}
+
+window.setTheme = function(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("gestor_theme", theme);
+  updateThemeButtons(theme);
+  syncToRTDB({ theme });
+  document.getElementById("stat-theme").textContent = theme === "dark" ? "Oscuro" : "Claro";
+};
+
+function updateThemeButtons(theme) {
+  document.getElementById("btn-light").classList.toggle("active", theme !== "dark");
+  document.getElementById("btn-dark").classList.toggle("active", theme === "dark");
+}
+
+document.getElementById("email-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const newEmail = document.getElementById("new-email").value;
+  const feedback = document.getElementById("email-feedback");
+  const btn = document.getElementById("btn-change-email");
+  if (!currentUser) return;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
+  updateEmail(currentUser, newEmail)
+    .then(() => {
+      syncToRTDB({ email: newEmail });
+      feedback.innerText = "¡Correo actualizado!";
+      feedback.className = "feedback-msg success";
+      document.getElementById("current-email-display").innerText = newEmail;
+      document.getElementById("stat-email").textContent = newEmail.split("@")[0];
+      e.target.reset();
+      showToast("Correo actualizado", "success");
+    })
+    .catch((error) => {
+      feedback.className = "feedback-msg error";
+      feedback.innerText = error.code === "auth/requires-recent-login"
+        ? "Por seguridad, cerrá sesión y volvé a ingresar."
+        : error.code === "auth/email-already-in-use"
+        ? "Este correo ya está en uso."
+        : "Error al actualizar correo.";
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-envelope-circle-check"></i> Actualizar Correo';
+    });
+});
+
+document.getElementById("password-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const newPwd = document.getElementById("new-password").value;
+  const confirmPwd = document.getElementById("confirm-password").value;
+  const feedback = document.getElementById("pwd-feedback");
+  const btn = document.getElementById("btn-change-pwd");
+
+  if (newPwd !== confirmPwd) {
+    feedback.innerText = "Las contraseñas no coinciden.";
+    feedback.className = "feedback-msg error";
+    return;
+  }
+  if (!currentUser) return;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
+  updatePassword(currentUser, newPwd)
+    .then(() => {
+      syncToRTDB({ lastPasswordChange: new Date().toISOString() });
+      feedback.innerText = "¡Contraseña actualizada!";
+      feedback.className = "feedback-msg success";
+      e.target.reset();
+      showToast("Contraseña actualizada", "success");
+    })
+    .catch((error) => {
+      feedback.className = "feedback-msg error";
+      feedback.innerText = error.code === "auth/requires-recent-login"
+        ? "Por seguridad, cerrá sesión e ingresá de nuevo."
+        : "Error. La contraseña es muy débil.";
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-key"></i> Actualizar Contraseña';
+    });
+});
+
+window.exportData = async function() {
+  if (!currentUser) return;
+  try {
+    const snap = await get(ref(db, `usuarios/${currentUser.uid}`));
+    const data = snap.val();
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `gestor-backup-${new Date().toISOString().split("T")[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Datos exportados", "success");
+  } catch(e) {
+    showToast("Error al exportar", "error");
+  }
+};
+
+window.clearSubs = async function() {
+  if (!currentUser) return;
+  if (!window.confirm("¿Eliminar TODAS las suscripciones? Esta acción es irreversible.")) return;
+  await remove(ref(db, `usuarios/${currentUser.uid}/suscripciones`));
+  showToast("Suscripciones eliminadas", "error");
+};
+
+window.clearExtras = async function() {
+  if (!currentUser) return;
+  if (!window.confirm("¿Eliminar todos los gastos extras? Esta acción es irreversible.")) return;
+  await remove(ref(db, `usuarios/${currentUser.uid}/oneTimeExpenses`));
+  await remove(ref(db, `usuarios/${currentUser.uid}/extras`));
+  showToast("Gastos extras eliminados", "error");
+};
+
+window.confirmDeleteAccount = async function() {
+  if (!currentUser) return;
+  const feedback = document.getElementById("delete-feedback");
+  if (!window.confirm("¿Estás ABSOLUTAMENTE SEGURO de eliminar tu cuenta? Todos tus datos se borrarán de forma permanente.")) return;
+  const btn = document.getElementById("btn-delete");
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+  try {
+    await remove(ref(db, "usuarios/" + currentUser.uid));
+    await deleteUser(currentUser);
+  } catch(error) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-user-slash"></i> Eliminar';
+    feedback.className = "feedback-msg error";
+    feedback.innerText = error.code === "auth/requires-recent-login"
+      ? "ACCESO DENEGADO: Cerrá sesión e ingresá nuevamente."
+      : "Error al eliminar la cuenta.";
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.gsap) {
+    gsap.fromTo(".topbar", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4 });
+    gsap.fromTo(".stats-summary", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, delay: 0.1 });
+    gsap.fromTo(".card", { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, delay: 0.2 });
+  }
+});
+</script>
+</body>
+</html>
