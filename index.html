@@ -684,6 +684,31 @@
         color: var(--muted);
         margin-top: 0.1rem;
       }
+      .progress-bar-wrap {
+        margin-top: 0.3rem;
+      }
+      .progress-bar-track {
+        height: 3px;
+        background: var(--border-light);
+        width: 100%;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: var(--positive);
+        transition: width 0.5s;
+      }
+      .progress-bar-fill.warn {
+        background: #f39c12;
+      }
+      .progress-bar-fill.done {
+        background: var(--muted);
+      }
+      .progress-text {
+        font-size: 0.65rem;
+        color: var(--muted);
+        margin-top: 0.15rem;
+        font-weight: 700;
+      }
       .item-actions {
         display: flex;
         justify-content: flex-end;
@@ -1053,6 +1078,21 @@
         background: #c0392b;
         border-color: #c0392b;
         color: #fff;
+      }
+      .calc-item.is-old-month {
+        opacity: 0.5;
+      }
+      .calc-item-paid-badge {
+        font-size: 0.62rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        background: var(--muted);
+        color: var(--surface);
+        padding: 0.12rem 0.45rem;
+        letter-spacing: 0.3px;
+        margin-top: 0.2rem;
+        display: inline-block;
+        margin-left: 0.5rem;
       }
 
       /* ===========================
@@ -2940,12 +2980,15 @@
         if (budget.currency === "USD") budgetARS = budget.amount * RATE_VENTA;
 
         if (budgetARS > 0) {
-          // Extras (gastos puntuales)
-          const extrasARS = calcItems.reduce(
-            (s, i) =>
-              s + (i.currency === "USD" ? i.amount * RATE_VENTA : i.amount),
-            0,
-          );
+          // Extras (gastos puntuales — solo mes actual)
+          const _cm = getCurrentMonth();
+          const extrasARS = calcItems
+            .filter((i) => !i.date || i.date.slice(0, 7) >= _cm)
+            .reduce(
+              (s, i) =>
+                s + (i.currency === "USD" ? i.amount * RATE_VENTA : i.amount),
+              0,
+            );
           // Tarjetas pendientes
           const cardsARS = creditCards
             .filter((c) => c.status !== "pagado")
@@ -3132,6 +3175,9 @@
         <div class="installment-info">
           Cuota: ${paid} / ${total}
           ${statusHtml}
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-track"><div class="progress-bar-fill ${cls}" style="width:${pct}%"></div></div>
         </div>`;
             }
 
@@ -3624,6 +3670,7 @@
           body.innerHTML = `<div class="empty-state"><i class="fa-solid fa-bag-shopping"></i><h3>Sin gastos extras</h3><p>Registrá gastos puntuales del mes.</p></div>`;
           return;
         }
+        const currentMonth = getCurrentMonth();
         body.innerHTML = [...calcItems]
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .map((item) => {
@@ -3631,10 +3678,13 @@
               item.currency === "USD"
                 ? `ARS ${fmt(item.amount * RATE_VENTA, 0)}`
                 : `USD ${fmt(item.amount / RATE_COMPRA, 2)}`;
-            return `<div class="calc-item">
+            // Determinar si pertenece a un mes anterior
+            const itemMonth = item.date ? item.date.slice(0, 7) : currentMonth;
+            const isOld = itemMonth < currentMonth;
+            return `<div class="calc-item${isOld ? " is-old-month" : ""}">
       <div>
         <div class="calc-item-name">${item.name}</div>
-        <div class="calc-item-date">${item.date || ""}</div>
+        <div class="calc-item-date">${item.date || ""}${isOld ? `<span class="calc-item-paid-badge">Mes anterior</span>` : ""}</div>
       </div>
       <div>
         <div class="calc-item-amount">${item.currency} ${fmt(item.amount)}</div>
@@ -3642,7 +3692,11 @@
       <div>
         <div class="calc-item-currency">${conv}</div>
       </div>
-      <button class="calc-item-del" onclick="deleteCalcItem('${item.id}')"><i class="fa-solid fa-xmark"></i></button>
+      ${
+        isOld
+          ? `<div style="display:flex;align-items:center;justify-content:flex-end;"><i class="fa-solid fa-check" style="color:var(--muted);font-size:0.8rem;"></i></div>`
+          : `<button class="calc-item-del" onclick="deleteCalcItem('${item.id}')"><i class="fa-solid fa-xmark"></i></button>`
+      }
     </div>`;
           })
           .join("");
@@ -3655,11 +3709,14 @@
         const fixedARS = subscriptions
           .filter((s) => !isCompletedThisMonth(s))
           .reduce((s, i) => s + toARS(i), 0);
-        const extrasARS = calcItems.reduce(
-          (s, i) =>
-            s + (i.currency === "USD" ? i.amount * RATE_VENTA : i.amount),
-          0,
-        );
+        const currentMonth = getCurrentMonth();
+        const extrasARS = calcItems
+          .filter((i) => !i.date || i.date.slice(0, 7) >= currentMonth)
+          .reduce(
+            (s, i) =>
+              s + (i.currency === "USD" ? i.amount * RATE_VENTA : i.amount),
+            0,
+          );
 
         document.getElementById("calc-budget-ars").textContent =
           budgetARS > 0 ? "ARS " + fmt(budgetARS, 0) : "—";
@@ -3915,11 +3972,14 @@
           ? `Próximo: ${nextCard.name} (${nextCard.dueDate})`
           : "Sin vencimientos próximos";
 
-        const extrasARS = calcItems.reduce(
-          (s, i) =>
-            s + (i.currency === "USD" ? i.amount * RATE_VENTA : i.amount),
-          0,
-        );
+        const _cmDb = getCurrentMonth();
+        const extrasARS = calcItems
+          .filter((i) => !i.date || i.date.slice(0, 7) >= _cmDb)
+          .reduce(
+            (s, i) =>
+              s + (i.currency === "USD" ? i.amount * RATE_VENTA : i.amount),
+            0,
+          );
         document.getElementById("db-extras-ars").textContent =
           "ARS " + fmt(extrasARS, 0);
         document.getElementById("db-extras-usd").textContent =
